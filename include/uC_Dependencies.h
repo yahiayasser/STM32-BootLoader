@@ -11,6 +11,17 @@
 #define Freq_CPU 8000000UL //	8MHz Clock frequency
 #endif
 
+
+#if(STM32f103 == BOOTLOADER_TARGET)
+
 #include "stm32f10x.h"
+
+#define FlashBase		0x08000000
+#define FlashSize		32000	// In bytes
+#define FlashPageSize	1000
+#define AppBase 		0x08000000
+#define NumberOfPages	(FlashSize/FlashPageSize)
+
+#endif
 
 #endif
