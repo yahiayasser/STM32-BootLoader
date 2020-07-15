@@ -44,5 +44,14 @@
   #error "The SW version of CONFIGURATION.h does not match the expected version"
 #endif
 
+typedef struct
+{
+	uint8 major;
+	uint8 minor;
+	uint8 patch;
+}Bootloader_Version;
+
+typedef uint32 Bootloader_FlashAddress;
+
 
 #endif /* BOOTLOADER_H_ */

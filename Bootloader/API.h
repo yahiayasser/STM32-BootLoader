@@ -61,7 +61,11 @@ typedef struct{
 }IHex_Frame;
 
 Std_ReturnType Bootloader_Init(void);
-Std_ReturnType Bootloader_Erase(void);
+Std_ReturnType Bootloader_FlashErase(void);
+Std_ReturnType Bootloader_FlashWrite(uint64 Data);
+Std_ReturnType Bootloader_Start(void);
+Std_ReturnType Bootloader_End(void);
+void Bootloader_GetVersion(Bootloader_Version* version);
 
 
 #endif /* BOOTLOADER_INTERFACE_H_ */

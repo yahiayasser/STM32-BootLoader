@@ -13,15 +13,13 @@
 #define CONFIGURATION_SW_MINOR_VERSION           (0U)
 #define CONFIGURATION_SW_PATCH_VERSION           (0U)
 
-/* Operating uC */
-#define BOOTLOADER_TARGET STM32f103
-#define STM32f103		1
+typedef uint8 Bootloader_SizeOfData;
+#define FLASH_WRITE_DATA_SIZE_HALFWORD    ((Bootloader_SizeOfData)0x01U)  /*!< Program a half-word (16-bit) at a specified address   */
+#define FLASH_WRITE_DATA_SIZE_WORD        ((Bootloader_SizeOfData)0x02U)  /*!< Program a word (32-bit) at a specified address        */
+#define FLASH_WRITE_DATA_SIZE_DOUBLEWORD  ((Bootloader_SizeOfData)0x03U)  /*!< Program a double word (64-bit) at a specified address */
 
-/* Hex file format */
-#define BOOTLOADER_FILE_FORMAT	Intel_HEX
-#define Intel_HEX			0
-#define Motorola_S_Records	1
-#define Raw_Binary			2
+
+#define BOOTLOADER_FlashProgrammedDataSize	FLASH_WRITE_DATA_SIZE_WORD
 
 /*
 	Enable	: STD_ON

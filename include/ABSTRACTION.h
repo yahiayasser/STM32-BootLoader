@@ -9,6 +9,7 @@
 #define ABSTRACTION_H_
 
 #define EraseComplete	FLASH_COMPLETE
+#define WriteComplete	FLASH_COMPLETE
 
 #define Bootloader_HW_Init()	{ \
 	RCC_HSICmd(ENABLE);\
@@ -17,17 +18,25 @@
 	FLASH_SetLatency(FLASH_Latency_0);\
 }
 
-#define Bootloader_FlashUnlock()	FLASH_Unlock()
+#define FlashLock()	FLASH_Lock()
+#define FlashUnlock()	FLASH_Unlock()
 
-#define Bootloader_FlashClrFlags()	{\
+#define FlashClrFlags()	{\
 	FLASH_ClearFlag(FLASH_FLAG_PGERR);\
 	FLASH_ClearFlag(FLASH_FLAG_WRPRTERR);\
 	FLASH_ClearFlag(FLASH_FLAG_EOP);\
 }
 
-#define Bootloader_FlashLock()	FLASH_Lock()
+#define PageErase(PageNo)	FLASH_ErasePage((PageNo * FlashPageSize) + FlashBase)
 
-#define Bootloader_ErasePage(PageNo)	FLASH_ErasePage((PageNo * FlashPageSize) + FlashBase)
+#define FlashErase()	FLASH_EraseAllPages()
+
+#define FLASH_ProgramHalfWord(FlashAdd, data)	FLASH_WriteHalfWord(FlashAdd, (uint16)data)
+#define FLASH_ProgramWord(FlashAdd, data)		FLASH_WriteWord(FlashAdd, (uint32)data)
+
+#define Bootloader_SetStartFlag()	FLASH_ProgramOptionByteData((uint32)Bootloader_StartFlagAddress, FlagValue)
+#define Bootloader_GetStartFlag()	((uint8)((FLASH_GetUserOptionByte() >> 8) && 0x000000FF))
+#define Bootloader_ClearStartFlag()	FLASH_ProgramOptionByteData((uint32)Bootloader_StartFlagAddress, ClearFlagValue)
 
 
 #endif
