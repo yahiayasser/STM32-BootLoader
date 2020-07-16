@@ -31,8 +31,8 @@
 
 #define FlashErase()	FLASH_EraseAllPages()
 
-#define FLASH_ProgramHalfWord(FlashAdd, data)	FLASH_WriteHalfWord(FlashAdd, (uint16)data)
-#define FLASH_ProgramWord(FlashAdd, data)		FLASH_WriteWord(FlashAdd, (uint32)data)
+#define FLASH_WriteHalfWord(Add, data)	FLASH_ProgramHalfWord(Add, (uint16)data)
+#define FLASH_WriteWord(Add, data)		FLASH_ProgramWord(Add, (uint32)data)
 
 #define Bootloader_SetStartFlag()	FLASH_ProgramOptionByteData((uint32)Bootloader_StartFlagAddress, FlagValue)
 #define Bootloader_GetStartFlag()	((uint8)((FLASH_GetUserOptionByte() >> 8) && 0x000000FF))

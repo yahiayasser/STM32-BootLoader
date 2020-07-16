@@ -60,6 +60,13 @@ typedef struct{
 	boolean valid;
 }IHex_Frame;
 
+typedef struct
+{
+	uint8 major;
+	uint8 minor;
+	uint8 patch;
+}Bootloader_Version;
+
 Std_ReturnType Bootloader_Init(void);
 Std_ReturnType Bootloader_FlashErase(void);
 Std_ReturnType Bootloader_FlashWrite(uint64 Data);

@@ -14,6 +14,10 @@
 #define BOOTLOADER_SW_PATCH_VERSION           (0U)
 
 
+/* Bootloader Module Id */
+#define BOOTLOADER_MODULE_ID    (0x00)
+
+
 #include "uC_Dependencies.h"
 /* Checking between Bootloader and UC_DEPENDENCIES Modules */
 #if ((BOOTLOADER_SW_MAJOR_VERSION != UC_DEPENDENCIES_SW_MAJOR_VERSION)\
@@ -44,12 +48,32 @@
   #error "The SW version of CONFIGURATION.h does not match the expected version"
 #endif
 
-typedef struct
-{
-	uint8 major;
-	uint8 minor;
-	uint8 patch;
-}Bootloader_Version;
+
+/* CanIf_ServiceId ENUM */
+typedef uint8 Bootloader_ServiceId;
+#define Bootloader_Init_API					((Bootloader_ServiceId)0x01U)
+#define Bootloader_UnlockFlash_API			((Bootloader_ServiceId)0x02U)
+#define Bootloader_LockFlash_API			((Bootloader_ServiceId)0x03U)
+#define Bootloader_PageErase_API			((Bootloader_ServiceId)0x04U)
+#define Bootloader_FlashErase_API			((Bootloader_ServiceId)0x05U)
+#define Bootloader_Start_API				((Bootloader_ServiceId)0x06U)
+#define Bootloader_End_API					((Bootloader_ServiceId)0x07U)
+#define Bootloader_ChangeWriteDataSize_API	((Bootloader_ServiceId)0x08U)
+#define Bootloader_FlashWrite_API			((Bootloader_ServiceId)0x09U)
+#define Bootloader_GetVersion_API			((Bootloader_ServiceId)0x0AU)
+#define Bootloader_Remove_Image_API			((Bootloader_ServiceId)0x0BU)
+#define Bootloader_Update_Image_API			((Bootloader_ServiceId)0x0CU)
+#define Bootloader_Install_Image_API		((Bootloader_ServiceId)0x0DU)
+
+
+#include "DET.h"
+/* Checking between Bootloader and DET Modules */
+#if ((BOOTLOADER_SW_MAJOR_VERSION != DET_SW_MAJOR_VERSION)\
+ ||  (BOOTLOADER_SW_MINOR_VERSION != DET_SW_MINOR_VERSION)\
+ ||  (BOOTLOADER_SW_PATCH_VERSION != DET_SW_PATCH_VERSION))
+  #error "The SW version of DET.h does not match the expected version"
+#endif
+
 
 typedef uint32 Bootloader_FlashAddress;
 

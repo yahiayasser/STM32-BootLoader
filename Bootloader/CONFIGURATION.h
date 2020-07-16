@@ -19,7 +19,14 @@ typedef uint8 Bootloader_SizeOfData;
 #define FLASH_WRITE_DATA_SIZE_DOUBLEWORD  ((Bootloader_SizeOfData)0x03U)  /*!< Program a double word (64-bit) at a specified address */
 
 
+#define Bootloader_UART	(0x0U)
+#define Bootloader_CAN	(0x1U)
+#define Bootloader_USB	(0x2U)
+
+
 #define BOOTLOADER_FlashProgrammedDataSize	FLASH_WRITE_DATA_SIZE_WORD
+
+#define BOOTLOADER_CommProtocol		Bootloader_UART
 
 /*
 	Enable	: STD_ON

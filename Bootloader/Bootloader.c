@@ -135,7 +135,7 @@ Std_ReturnType Bootloader_FlashWrite(uint64 Data)
 
 	if(FLASH_WRITE_DATA_SIZE_HALFWORD == SizeOfDataTobeWritten)
 	{
-		if(WriteComplete != FLASH_ProgramHalfWord(FlashAdd, Data))
+		if(WriteComplete != FLASH_WriteHalfWord(FlashAdd, Data))
 		{
 			return State;
 		}
@@ -145,7 +145,7 @@ Std_ReturnType Bootloader_FlashWrite(uint64 Data)
 	}
 	else if(FLASH_WRITE_DATA_SIZE_WORD == SizeOfDataTobeWritten)
 	{
-		if(WriteComplete != FLASH_ProgramWord(FlashAdd, Data))
+		if(WriteComplete != FLASH_WriteWord(FlashAdd, Data))
 		{
 			return State;
 		}
@@ -155,13 +155,13 @@ Std_ReturnType Bootloader_FlashWrite(uint64 Data)
 	}
 	else if(FLASH_WRITE_DATA_SIZE_DOUBLEWORD == SizeOfDataTobeWritten)
 	{
-		if(WriteComplete != FLASH_ProgramWord(FlashAdd, Data))
+		if(WriteComplete != FLASH_WriteWord(FlashAdd, Data))
 		{
 			return State;
 		}
 		else{
 			FlashAdd += 4;
-			if(WriteComplete != FLASH_ProgramWord(FlashAdd, (uint32)(Data >> 32)))
+			if(WriteComplete != FLASH_WriteWord(FlashAdd, (uint32)(Data >> 32)))
 			{
 				return State;
 			}
