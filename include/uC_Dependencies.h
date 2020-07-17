@@ -59,10 +59,10 @@
 /*----------------------- Data word memory order -------------------------*/
 #define CONFIG_ENDIAN_TYPE                      (ENDIAN_TYPE_LITTLE)        /*  ARM is a little endian processor.                                   */
 
-#define FlashBase		0x08000000
-#define FlashSize		32000	// In bytes
-#define FlashPageSize	1000
-#define AppBase 		0x08000000
+#define FlashBase		(0x08000000)
+#define FlashSize		(0x8000)	// In bytes
+#define FlashPageSize	(0x400)
+#define AppBase 		0x08002000
 #define NumberOfPages	(FlashSize/FlashPageSize)
 #define Bootloader_StartFlagAddress		(0x1FFFF804)
 #define FlagValue 		0xAA

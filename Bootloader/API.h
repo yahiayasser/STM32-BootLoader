@@ -22,22 +22,11 @@
 #define STD_ON			0x01
 #define STD_OFF			0x00
 
+#define BOOTLOADER_START_ADD	(0x08000000)
+
 /* Maximum size of data in IHex frame
  * Default:	32*/
 #define IHexDataMaxLength	32
-
-typedef uint8 Std_ReturnType;
-#define E_OK 					(Std_ReturnType)0
-#define E_NOT_OK 				(Std_ReturnType)1
-
-typedef enum{
-    IHEX_DATA,	// Data
-    IHEX_EOF,	// End Of File
-    IHEX_ESA,	// Extended Segment Address
-    IHEX_SSA,	// Start Segment Address
-    IHEX_ELA,	// Extended Linear Address
-    IHEX_SLA	// Start Linear Address
-}IHex_RecordTypes;
 
 /* IHex_Frame is a structure representing Intel Hex file format */
 typedef struct{
@@ -60,19 +49,13 @@ typedef struct{
 	boolean valid;
 }IHex_Frame;
 
-typedef struct
-{
-	uint8 major;
-	uint8 minor;
-	uint8 patch;
-}Bootloader_Version;
-
 Std_ReturnType Bootloader_Init(void);
-Std_ReturnType Bootloader_FlashErase(void);
+Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType);
 Std_ReturnType Bootloader_FlashWrite(uint64 Data);
 Std_ReturnType Bootloader_Start(void);
 Std_ReturnType Bootloader_End(void);
 void Bootloader_GetVersion(Bootloader_Version* version);
+void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size);
 
 
 #endif /* BOOTLOADER_INTERFACE_H_ */

@@ -6,8 +6,6 @@
 
 static void Bootloader_UnlockFlash(void);
 static void Bootloader_LockFlash(void);
-static Std_ReturnType Bootloader_PageErase(uint8 PageNo);
-static void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size);
 
 static boolean FlashIsAlreadyUnocked_Flag = FALSE;
 static uint8 FlashDontLock_Count = 0;
@@ -62,29 +60,42 @@ Std_ReturnType Bootloader_Init(void)
 	return State;
 }
 
-static Std_ReturnType Bootloader_PageErase(uint8 PageNo)
+Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType)
 {
 	Std_ReturnType State = E_NOT_OK;
 
 	Bootloader_UnlockFlash();
-	if(PageErase(PageNo) == EraseComplete)
+
+	if(ERASE_PAGE == pEraseType -> EraseType)
 	{
-		State = E_OK;
+		if(EraseComplete != PageErase(pEraseType -> StartPage))
+		{
+			return State;
+		}
 	}
-	Bootloader_LockFlash();
-
-	return State;
-}
-
-Std_ReturnType Bootloader_FlashErase(void)
-{
-	Std_ReturnType State = E_NOT_OK;
-
-	Bootloader_UnlockFlash();
-	if(EraseComplete != FlashErase())
+	else if(ERASE_SECTOR == pEraseType -> EraseType)
 	{
+		uint8 Page = pEraseType -> StartPage;
+		uint8 Iterations = pEraseType -> PageNo;
+		for(uint8 count = 0; count < Iterations; count++)
+		{
+			if(EraseComplete != PageErase(Page + count))
+			{
+				return State;
+			}
+		}
+	}
+	else if(ERASE_FLASH == pEraseType -> EraseType)
+	{
+		if(EraseComplete != FlashErase())
+		{
+			return State;
+		}
+	}
+	else{
 		return State;
 	}
+
 	Bootloader_LockFlash();
 
 	State = E_OK;
@@ -122,7 +133,7 @@ Std_ReturnType Bootloader_End(void)
 	return State;
 }
 
-static void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size)
+void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size)
 {
 	SizeOfDataTobeWritten = size;
 }
@@ -169,7 +180,10 @@ Std_ReturnType Bootloader_FlashWrite(uint64 Data)
 				FlashAdd += 4;
 			}
 		}
-	}else{}
+	}
+	else{
+		return State;
+	}
 
 	Bootloader_LockFlash();
 

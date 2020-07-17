@@ -13,11 +13,6 @@
 #define CONFIGURATION_SW_MINOR_VERSION           (0U)
 #define CONFIGURATION_SW_PATCH_VERSION           (0U)
 
-typedef uint8 Bootloader_SizeOfData;
-#define FLASH_WRITE_DATA_SIZE_HALFWORD    ((Bootloader_SizeOfData)0x01U)  /*!< Program a half-word (16-bit) at a specified address   */
-#define FLASH_WRITE_DATA_SIZE_WORD        ((Bootloader_SizeOfData)0x02U)  /*!< Program a word (32-bit) at a specified address        */
-#define FLASH_WRITE_DATA_SIZE_DOUBLEWORD  ((Bootloader_SizeOfData)0x03U)  /*!< Program a double word (64-bit) at a specified address */
-
 
 #define Bootloader_UART	(0x0U)
 #define Bootloader_CAN	(0x1U)

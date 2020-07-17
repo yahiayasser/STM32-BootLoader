@@ -30,6 +30,14 @@
 #include "Platform_Types.h"
 #include "ABSTRACTION.h"
 
+#include "Bootloader_DataTypes.h"
+/* Checking between Bootloader and Bootloader_DataTypes Modules */
+#if ((BOOTLOADER_SW_MAJOR_VERSION != BOOTLOADER_DATATYPES_SW_MAJOR_VERSION)\
+ ||  (BOOTLOADER_SW_MINOR_VERSION != BOOTLOADER_DATATYPES_SW_MINOR_VERSION)\
+ ||  (BOOTLOADER_SW_PATCH_VERSION != BOOTLOADER_DATATYPES_SW_PATCH_VERSION))
+  #error "The SW version of Bootloader_DataTypes.h does not match the expected version"
+#endif
+
 
 #include "API.h"
 /* Checking between Bootloader and Bootloader_interface Modules */
@@ -76,6 +84,8 @@ typedef uint8 Bootloader_ServiceId;
 
 
 typedef uint32 Bootloader_FlashAddress;
+
+Std_ReturnType Bootloader(Bootloader_SignalType signal);
 
 
 #endif /* BOOTLOADER_H_ */
