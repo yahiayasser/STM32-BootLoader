@@ -38,6 +38,8 @@
 #define Bootloader_GetStartFlag()	((uint8)((FLASH_GetUserOptionByte() >> 8) && 0x000000FF))
 #define Bootloader_ClearStartFlag()	FLASH_ProgramOptionByteData((uint32)Bootloader_StartFlagAddress, ClearFlagValue)
 
+#define SetNewVectorTable()		NVIC_SetVectorTable(NVIC_VectTab_FLASH, Application_Add);
+
 
 #endif
 

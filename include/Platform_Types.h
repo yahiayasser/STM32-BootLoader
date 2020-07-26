@@ -84,6 +84,8 @@ typedef volatile uint32 vuint32_t;
 typedef volatile sint64 vint64_t;
 typedef volatile uint64 vuint64_t;
 
+typedef void (*pFunction)(void);
+
 
 //Optimized integer data types
 /** Boolean data type. **/

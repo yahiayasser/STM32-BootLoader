@@ -4,14 +4,16 @@
 #include "Bootloader.h"
 
 
-static void Bootloader_UnlockFlash(void);
-static void Bootloader_LockFlash(void);
+__attribute__((section(".boot_code"))) static void Bootloader_UnlockFlash(void);
+__attribute__((section(".boot_code"))) static void Bootloader_LockFlash(void);
 
 static boolean FlashIsAlreadyUnocked_Flag = FALSE;
 static uint8 FlashDontLock_Count = 0;
 
-static Bootloader_FlashAddress FlashAdd = AppBase;
+static Bootloader_FlashAddress Application_Add = AppBase;
 static Bootloader_SizeOfData SizeOfDataTobeWritten = BOOTLOADER_FlashProgrammedDataSize;
+
+pFunction Jump_To_Application;
 
 Bootloader_Version BootloaderVersion;
 
@@ -105,7 +107,7 @@ Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType)
 Std_ReturnType Bootloader_Start(void)
 {
 	Std_ReturnType State = E_NOT_OK;
-	FlashAdd = AppBase;
+	Application_Add = AppBase;
 
 	Bootloader_UnlockFlash();
 	if(WriteComplete != Bootloader_SetStartFlag())
@@ -146,38 +148,38 @@ Std_ReturnType Bootloader_FlashWrite(uint64 Data)
 
 	if(FLASH_WRITE_DATA_SIZE_HALFWORD == SizeOfDataTobeWritten)
 	{
-		if(WriteComplete != FLASH_WriteHalfWord(FlashAdd, Data))
+		if(WriteComplete != FLASH_WriteHalfWord(Application_Add, Data))
 		{
 			return State;
 		}
 		else{
-			FlashAdd += 2;
+			Application_Add += 2;
 		}
 	}
 	else if(FLASH_WRITE_DATA_SIZE_WORD == SizeOfDataTobeWritten)
 	{
-		if(WriteComplete != FLASH_WriteWord(FlashAdd, Data))
+		if(WriteComplete != FLASH_WriteWord(Application_Add, Data))
 		{
 			return State;
 		}
 		else{
-			FlashAdd += 4;
+			Application_Add += 4;
 		}
 	}
 	else if(FLASH_WRITE_DATA_SIZE_DOUBLEWORD == SizeOfDataTobeWritten)
 	{
-		if(WriteComplete != FLASH_WriteWord(FlashAdd, Data))
+		if(WriteComplete != FLASH_WriteWord(Application_Add, Data))
 		{
 			return State;
 		}
 		else{
-			FlashAdd += 4;
-			if(WriteComplete != FLASH_WriteWord(FlashAdd, (uint32)(Data >> 32)))
+			Application_Add += 4;
+			if(WriteComplete != FLASH_WriteWord(Application_Add, (uint32)(Data >> 32)))
 			{
 				return State;
 			}
 			else{
-				FlashAdd += 4;
+				Application_Add += 4;
 			}
 		}
 	}
@@ -195,5 +197,12 @@ void Bootloader_GetVersion(Bootloader_Version* version)
 {
 	*version = BootloaderVersion;
 	return;
+}
+
+void Bootloader_JumpToApp(void)
+{
+	SetNewVectorTable();
+	Disable_Interrupts();
+	Jump_To_Application = (pFunction)(AppBase + 4);
 }
 

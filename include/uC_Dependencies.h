@@ -43,6 +43,7 @@
 #if(STM32f103 == BOOTLOADER_TARGET)
 
 #include "stm32f10x.h"
+#include "stm32f10x_conf.h"
 
 /*----------------------- Hex file format ------------------------*/
 #define BOOTLOADER_FILE_FORMAT	Intel_HEX

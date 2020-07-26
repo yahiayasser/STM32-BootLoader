@@ -29,6 +29,7 @@
 
 #include "Platform_Types.h"
 #include "ABSTRACTION.h"
+#include "Interrupts.h"
 
 #include "Bootloader_DataTypes.h"
 /* Checking between Bootloader and Bootloader_DataTypes Modules */
@@ -85,7 +86,7 @@ typedef uint8 Bootloader_ServiceId;
 
 typedef uint32 Bootloader_FlashAddress;
 
-Std_ReturnType Bootloader(Bootloader_SignalType signal);
+__attribute__((section(".boot_code"))) Std_ReturnType Bootloader(Bootloader_SignalType signal);
 
 
 #endif /* BOOTLOADER_H_ */
