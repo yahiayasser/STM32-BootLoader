@@ -4,8 +4,11 @@
 #include "Bootloader.h"
 
 
-__attribute__((section(".boot_code"))) static void Bootloader_UnlockFlash(void);
-__attribute__((section(".boot_code"))) static void Bootloader_LockFlash(void);
+__attribute__((section(".boot_code")))
+static void Bootloader_UnlockFlash(void);
+
+__attribute__((section(".boot_code")))
+static void Bootloader_LockFlash(void);
 
 static boolean FlashIsAlreadyUnocked_Flag = FALSE;
 static uint8 FlashDontLock_Count = 0;
@@ -201,8 +204,7 @@ void Bootloader_GetVersion(Bootloader_Version* version)
 
 void Bootloader_JumpToApp(void)
 {
-	SetNewVectorTable();
 	Disable_Interrupts();
-	Jump_To_Application = (pFunction)(AppBase + 4);
+	Jump_To_Application = (pFunction)(AppBase);
 }
 

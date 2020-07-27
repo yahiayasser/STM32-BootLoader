@@ -86,7 +86,8 @@ typedef uint8 Bootloader_ServiceId;
 
 typedef uint32 Bootloader_FlashAddress;
 
-__attribute__((section(".boot_code"))) Std_ReturnType Bootloader(Bootloader_SignalType signal);
+__attribute__((section(".boot_code")))
+Std_ReturnType Bootloader(Bootloader_SignalType signal);
 
 
 #endif /* BOOTLOADER_H_ */

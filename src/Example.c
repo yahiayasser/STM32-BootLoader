@@ -28,34 +28,17 @@
 // ----------------------------------------------------------------------------
 
 
-#include "Timer.h"
-#include "BlinkLed.h"
 #include "Bootloader.h"
-
-// Keep the LED on for 2/3 of a second.
-#define BLINK_ON_TICKS  (TIMER_FREQUENCY_HZ * 3 / 4)
-#define BLINK_OFF_TICKS (TIMER_FREQUENCY_HZ - BLINK_ON_TICKS)
 
 int main(void)
 {
-	timer_start();
 
-	blink_led_init();
-
-	uint32_t seconds = 0;
 	Bootloader_Init();
-	//__set_MSP(MAIN_FLASH_OFFSET);
+	Bootloader(1);
+	Bootloader_FlashWrite(0x1234);
 
-	// Infinite loop
 	while (1)
 	  {
-		blink_led_on();
-		timer_sleep(seconds == 0 ? TIMER_FREQUENCY_HZ : BLINK_ON_TICKS);
-
-		blink_led_off();
-		timer_sleep(BLINK_OFF_TICKS);
-
-		++seconds;
+		// Infinite loop, never return.
 	  }
-	// Infinite loop, never return.
 }

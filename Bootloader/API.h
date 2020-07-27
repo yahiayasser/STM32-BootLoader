@@ -49,13 +49,27 @@ typedef struct{
 	boolean valid;
 }IHex_Frame;
 
-__attribute__((section(".boot_code"))) Std_ReturnType Bootloader_Init(void);
-__attribute__((section(".boot_code"))) Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType);
-__attribute__((section(".boot_code"))) Std_ReturnType Bootloader_FlashWrite(uint64 Data);
-__attribute__((section(".boot_code"))) Std_ReturnType Bootloader_Start(void);
-__attribute__((section(".boot_code"))) Std_ReturnType Bootloader_End(void);
-__attribute__((section(".boot_code"))) void Bootloader_GetVersion(Bootloader_Version* version);
-__attribute__((section(".boot_code"))) void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size);
+
+__attribute__((section(".boot_code")))
+Std_ReturnType Bootloader_Init(void);
+
+__attribute__((section(".boot_code")))
+Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType);
+
+__attribute__((section(".boot_code")))
+Std_ReturnType Bootloader_FlashWrite(uint64 Data);
+
+__attribute__((section(".boot_code")))
+Std_ReturnType Bootloader_Start(void);
+
+__attribute__((section(".boot_code")))
+Std_ReturnType Bootloader_End(void);
+
+__attribute__((section(".boot_code")))
+void Bootloader_GetVersion(Bootloader_Version* version);
+
+__attribute__((section(".boot_code")))
+void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size);
 
 
 #endif /* BOOTLOADER_INTERFACE_H_ */
