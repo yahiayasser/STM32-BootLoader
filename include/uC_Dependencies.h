@@ -82,21 +82,21 @@ typedef struct{
 #define CONFIG_ENDIAN_TYPE                      (ENDIAN_TYPE_LITTLE)        /*  ARM is a little endian processor.                                   */
 
 #define FlashStartAddress		(0x08000000)
-#define FlashEndAddress			(0x08007FFF)
-#define FlashSize				(0x8000)	// In bytes
+#define FlashEndAddress			(0x0800FFFF)
+#define FlashSize				(0x10000)	// In bytes
 #define FlashPageSize			(0x400)
 #define FlashNumberOfPages		(FlashSize/FlashPageSize)
 
 
 #define AppStartAddress			(0x08000000)
-#define AppEndAddress			(0x08005FFF)
-#define AppSize					(0x6000)	// In bytes
+#define AppEndAddress			(0x0800BFFF)
+#define AppSize					(0xC000)	// In bytes
 #define AppNumberOfPages		(AppSize/FlashPageSize)
 
 
-#define BootloaderStartAddress	(0x08006000)
-#define BootloaderEndAddress	(0x08007FFF)
-#define BootloaderSize			(0x2000)	// In bytes
+#define BootloaderStartAddress	(0x0800C000)
+#define BootloaderEndAddress	(0x0800FFFF)
+#define BootloaderSize			(0x4000)	// In bytes
 #define BootloaderNumberOfPages	(BootloaderSize/FlashPageSize)
 
 

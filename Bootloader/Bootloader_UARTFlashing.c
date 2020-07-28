@@ -105,13 +105,31 @@ Std_ReturnType Install_Image(void)
 	/* NextAddress is a pointer to the next page that will be written.
 	 * Used to check if the writing process on the flash is continuous or not.
 	 */
-	uint32 NextAddress = NULL_Address;
+	uint32 NextAddress = (uint32)NULL_Address;
 
 	/* PageAddress holds the address value of page that will be written */
 	uint32 PageAddress = 0x0;
 
 	/* FileType specify whether the file is Application or Boot-loader */
 	uint8 FileType;
+
+	while(1)
+	{
+		/* Initiate IHexFrame */
+		IHexFrame.valid = FALSE;
+
+		/* Receive IHex Frame in ASCII wise */
+		for(ui8Count = 0; ui8Count < MaxFrameLength; ui8Count++)
+		{
+			//StringFrame[ui8Count] = GetChar;
+			if(StringFrame[ui8Count] == '\r')
+			{
+				StringFrame[ui8Count] = '\0';
+				break;
+			}
+			else{}
+		}
+	}
 
 #endif
 

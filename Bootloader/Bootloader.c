@@ -16,6 +16,8 @@ static uint8 FlashDontLock_Count = 0;
 static Bootloader_FlashAddress Application_Add = AppStartAddress;
 static Bootloader_SizeOfData SizeOfDataTobeWritten = BOOTLOADER_FlashProgrammedDataSize;
 
+extern USART_InitTypeDef BootloaderUART;
+
 pFunction Jump_To_Application;
 
 Bootloader_Version BootloaderVersion;
