@@ -104,4 +104,8 @@ typedef void (*pFunction)(void);
 #define True		(boolean)1
 #endif
 
+#ifndef NULL_Address
+#define NULL_Address	((void *)0)
+#endif
+
 #endif

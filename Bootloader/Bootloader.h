@@ -18,6 +18,16 @@
 #define BOOTLOADER_MODULE_ID    (0x00)
 
 
+#include "Platform_Types.h"
+#include "Bootloader_DataTypes.h"
+/* Checking between Bootloader and Bootloader_DataTypes Modules */
+#if ((BOOTLOADER_SW_MAJOR_VERSION != BOOTLOADER_DATATYPES_SW_MAJOR_VERSION)\
+ ||  (BOOTLOADER_SW_MINOR_VERSION != BOOTLOADER_DATATYPES_SW_MINOR_VERSION)\
+ ||  (BOOTLOADER_SW_PATCH_VERSION != BOOTLOADER_DATATYPES_SW_PATCH_VERSION))
+  #error "The SW version of Bootloader_DataTypes.h does not match the expected version"
+#endif
+
+
 #include "uC_Dependencies.h"
 /* Checking between Bootloader and UC_DEPENDENCIES Modules */
 #if ((BOOTLOADER_SW_MAJOR_VERSION != UC_DEPENDENCIES_SW_MAJOR_VERSION)\
@@ -27,17 +37,8 @@
 #endif
 
 
-#include "Platform_Types.h"
 #include "ABSTRACTION.h"
 #include "Interrupts.h"
-
-#include "Bootloader_DataTypes.h"
-/* Checking between Bootloader and Bootloader_DataTypes Modules */
-#if ((BOOTLOADER_SW_MAJOR_VERSION != BOOTLOADER_DATATYPES_SW_MAJOR_VERSION)\
- ||  (BOOTLOADER_SW_MINOR_VERSION != BOOTLOADER_DATATYPES_SW_MINOR_VERSION)\
- ||  (BOOTLOADER_SW_PATCH_VERSION != BOOTLOADER_DATATYPES_SW_PATCH_VERSION))
-  #error "The SW version of Bootloader_DataTypes.h does not match the expected version"
-#endif
 
 
 #include "API.h"

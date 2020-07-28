@@ -22,7 +22,7 @@
 #define STD_ON			0x01
 #define STD_OFF			0x00
 
-#define BOOTLOADER_START_ADD	(0x08000000)
+#define BOOTLOADER_START_ADD	(0x08006000)
 
 /* Maximum size of data in IHex frame
  * Default:	32*/

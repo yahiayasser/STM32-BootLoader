@@ -27,16 +27,16 @@
 	FLASH_ClearFlag(FLASH_FLAG_EOP);\
 }
 
-#define PageErase(PageNo)	FLASH_ErasePage((PageNo * FlashPageSize) + FlashBase)
+#define PageErase(PageNo)	FLASH_ErasePage((PageNo * FlashPageSize) | FlashStartAddress)
 
 #define FlashErase()	FLASH_EraseAllPages()
 
 #define FLASH_WriteHalfWord(Add, data)	FLASH_ProgramHalfWord(Add, (uint16)data)
 #define FLASH_WriteWord(Add, data)		FLASH_ProgramWord(Add, (uint32)data)
 
-#define Bootloader_SetStartFlag()	FLASH_ProgramOptionByteData((uint32)Bootloader_StartFlagAddress, FlagValue)
-#define Bootloader_GetStartFlag()	((uint8)((FLASH_GetUserOptionByte() >> 8) && 0x000000FF))
-#define Bootloader_ClearStartFlag()	FLASH_ProgramOptionByteData((uint32)Bootloader_StartFlagAddress, ClearFlagValue)
+#define Bootloader_SetStartFlag()		FLASH_ProgramOptionByteData((uint32)Bootloader_StartFlagAddress, Bootloader_NotCompleted)
+#define Bootloader_GetStartFlag()		((uint8)((FLASH_GetUserOptionByte() >> 8) && 0x000000FF))
+#define Bootloader_ClearStartFlag()		FLASH_ProgramOptionByteData((uint32)Bootloader_StartFlagAddress, Bootloader_Completed)
 
 #define SetNewVectorTable()		NVIC_SetVectorTable(NVIC_VectTab_FLASH, Application_Add);
 

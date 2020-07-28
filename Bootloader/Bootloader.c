@@ -13,7 +13,7 @@ static void Bootloader_LockFlash(void);
 static boolean FlashIsAlreadyUnocked_Flag = FALSE;
 static uint8 FlashDontLock_Count = 0;
 
-static Bootloader_FlashAddress Application_Add = AppBase;
+static Bootloader_FlashAddress Application_Add = AppStartAddress;
 static Bootloader_SizeOfData SizeOfDataTobeWritten = BOOTLOADER_FlashProgrammedDataSize;
 
 pFunction Jump_To_Application;
@@ -110,7 +110,7 @@ Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType)
 Std_ReturnType Bootloader_Start(void)
 {
 	Std_ReturnType State = E_NOT_OK;
-	Application_Add = AppBase;
+	Application_Add = AppStartAddress;
 
 	Bootloader_UnlockFlash();
 	if(WriteComplete != Bootloader_SetStartFlag())
@@ -126,7 +126,7 @@ Std_ReturnType Bootloader_End(void)
 {
 	Std_ReturnType State = E_NOT_OK;
 
-	if(FlagValue != Bootloader_GetStartFlag())
+	if(Bootloader_NotCompleted != Bootloader_GetStartFlag())
 	{
 		return State;
 	}
@@ -205,6 +205,7 @@ void Bootloader_GetVersion(Bootloader_Version* version)
 void Bootloader_JumpToApp(void)
 {
 	Disable_Interrupts();
-	Jump_To_Application = (pFunction)(AppBase);
+	SystemReset();
+	while(1);
 }
 
