@@ -6,7 +6,7 @@
  */
 
 
-#include <COM_Config.h>
+#include "COM_Config.h"
 
 USART_InitTypeDef BootloaderUART =
 {

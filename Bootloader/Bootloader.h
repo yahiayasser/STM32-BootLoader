@@ -40,6 +40,8 @@
 #include "ABSTRACTION.h"
 #include "Interrupts.h"
 
+#include "Com_Config.h"
+
 
 #include "API.h"
 /* Checking between Bootloader and Bootloader_interface Modules */

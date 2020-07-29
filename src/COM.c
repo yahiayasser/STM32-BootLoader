@@ -6,8 +6,69 @@
  */
 
 
-#include <COM_Config.h>
+#include "COM_Config.h"
 #include "Bootloader.h"
+
+
+void COMInit(void)
+{
+#if(Bootloader_UART == BOOTLOADER_CommProtocol)
+	Bootloader_UARTInit();
+#elif(Bootloader_CAN == BOOTLOADER_CommProtocol)
+
+#elif(Bootloader_USB == BOOTLOADER_CommProtocol)
+
+#else
+#error "Invalid value of BOOTLOADER_CommProtocol"
+#endif
+}
+
+void COMSend(uint16 SizeOfData, void* pData)
+{
+
+#if(Bootloader_UART == BOOTLOADER_CommProtocol)
+
+	uint8* ptr = (uint8*) pData;
+	uint16 Count = 0;
+
+	for(; Count < SizeOfData; Count++)
+	{
+		USART_SendData(USART1, (uint16)ptr[Count]);
+	}
+
+#elif(Bootloader_CAN == BOOTLOADER_CommProtocol)
+
+#elif(Bootloader_USB == BOOTLOADER_CommProtocol)
+
+#else
+#error "Invalid value of BOOTLOADER_CommProtocol"
+#endif
+
+}
+
+void COMReceive(uint16 SizeOfData, void* pData)
+{
+
+#if(Bootloader_UART == BOOTLOADER_CommProtocol)
+
+	uint8* ptr = (uint8*) pData;
+	uint16 Count = 0;
+
+	for(; Count < SizeOfData; Count++)
+	{
+		ptr[Count] = (uint8)USART_ReceiveData(USART1);
+	}
+
+#elif(Bootloader_CAN == BOOTLOADER_CommProtocol)
+
+#elif(Bootloader_USB == BOOTLOADER_CommProtocol)
+
+#else
+#error "Invalid value of BOOTLOADER_CommProtocol"
+#endif
+
+}
+
 
 #if(Bootloader_UART == BOOTLOADER_CommProtocol)
 

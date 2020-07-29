@@ -12,9 +12,14 @@ typedef uint8 Std_ReturnType;
 #define E_NOT_OK 				(Std_ReturnType)1
 
 typedef uint8 Bootloader_SizeOfData;
-#define FLASH_WRITE_DATA_SIZE_HALFWORD    ((Bootloader_SizeOfData)0x01U)  /*!< Program a half-word (16-bit) at a specified address   */
-#define FLASH_WRITE_DATA_SIZE_WORD        ((Bootloader_SizeOfData)0x02U)  /*!< Program a word (32-bit) at a specified address        */
-#define FLASH_WRITE_DATA_SIZE_DOUBLEWORD  ((Bootloader_SizeOfData)0x03U)  /*!< Program a double word (64-bit) at a specified address */
+#define FLASH_WRITE_DATA_SIZE_HALFWORD    ((Bootloader_SizeOfData)1U)  /*!< Program a half-word (16-bit) at a specified address   */
+#define FLASH_WRITE_DATA_SIZE_WORD        ((Bootloader_SizeOfData)2U)  /*!< Program a word (32-bit) at a specified address        */
+#define FLASH_WRITE_DATA_SIZE_DOUBLEWORD  ((Bootloader_SizeOfData)3U)  /*!< Program a double word (64-bit) at a specified address */
+
+
+/* Maximum size of data in IHex frame
+ * Default:	16*/
+#define IHexDataMaxLength	0x10
 
 typedef enum{
     IHEX_DATA,	// Data
@@ -54,6 +59,25 @@ typedef struct
 	uint8 minor;
 	uint8 patch;
 }Bootloader_Version;
+
+/* IHex_Frame is a structure representing Intel Hex file format */
+typedef struct{
+	/* Sequence of n bytes of data, represented by 2n hex digits */
+	uint8 data[IHexDataMaxLength];
+
+	/* Four hex digits, representing the 16-bit beginning memory address offset of the data */
+	uint16 address;
+
+	/* Two hex digits, indicating the number of bytes (hex digit pairs) in the data field */
+	uint8 byte_count;
+
+	/* Two hex digits, a computed value that can be used to verify the record has no errors */
+	uint8 checksum;
+
+	/* Two hex digits, 00 to 05, defining the meaning of the data field */
+	IHex_RecordTypes record_type;
+}IHex_Frame;
+
 
 
 

@@ -53,6 +53,9 @@ void Bootloader_UARTInit(void);
 #endif
 
 void COM_InterruptSetter(pFunction ptr);
+void COMInit(void);
+void COMSend(uint16 SizeOfData, void* pData);
+void COMReceive(uint16 SizeOfData, void* pData);
 
 #endif
 

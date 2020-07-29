@@ -21,6 +21,12 @@
 #define Bootloader_Polling		(1U)
 #define Bootloader_Interrupt	(2U)
 
+#define IntelHex_Type			(1U)
+#define Motorola_S_Record_Type	(2U)
+#define RawBinary_Type			(3U)
+
+
+#define BOOTLOADER_FrameType	IntelHex_Type
 
 /*	FLASH_WRITE_DATA_SIZE_HALFWORD
  * 	FLASH_WRITE_DATA_SIZE_WORD

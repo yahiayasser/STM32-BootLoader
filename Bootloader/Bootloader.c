@@ -16,11 +16,11 @@ static uint8 FlashDontLock_Count = 0;
 static Bootloader_FlashAddress Application_Add = AppStartAddress;
 static Bootloader_SizeOfData SizeOfDataTobeWritten = BOOTLOADER_FlashProgrammedDataSize;
 
-extern USART_InitTypeDef BootloaderUART;
-
 pFunction Jump_To_Application;
 
 Bootloader_Version BootloaderVersion;
+
+
 
 static void Bootloader_UnlockFlash(void)
 {
@@ -62,6 +62,51 @@ Std_ReturnType Bootloader_Init(void)
 	BootloaderVersion.major = BOOTLOADER_SW_MAJOR_VERSION;
 	BootloaderVersion.minor = BOOTLOADER_SW_MINOR_VERSION;
 	BootloaderVersion.patch = BOOTLOADER_SW_PATCH_VERSION;
+
+	State = E_OK;
+	return State;
+}
+
+Std_ReturnType Bootloader_ReceiveFrame(void* Frame)
+{
+	Std_ReturnType State = E_NOT_OK;
+
+#if(IntelHex_Type == BOOTLOADER_FrameType)
+
+	volatile uint8 Temp = 0;
+	IHex_Frame Frame_IHex = *((IHex_Frame*) Frame);
+
+	COMReceive((uint16)1, (void*)&Temp);
+
+	if(Temp != ':')
+	{
+		return State;
+	}
+
+	COMReceive((uint16)1, 						(void*)&(Frame_IHex.byte_count));
+	COMReceive((uint16)2, 						(void*)&(Frame_IHex.address));
+	COMReceive((uint16)1, 						(void*)&(Frame_IHex.record_type));
+	COMReceive((uint16)(Frame_IHex.byte_count), (void*)&(Frame_IHex.data));
+	COMReceive((uint16)1,						(void*)&(Frame_IHex.checksum));
+
+	COMReceive((uint16)1, (void*)&Temp);
+	if(Temp != ':')
+	{
+		return State;
+	}
+	COMReceive((uint16)1, (void*)&Temp);
+	if(Temp != ':')
+	{
+		return State;
+	}
+
+#elif(Motorola_S_Record_Type == BOOTLOADER_FrameType)
+
+#elif(RawBinary_Type == BOOTLOADER_FrameType)
+
+#else
+#error "Invalid value of BOOTLOADER_CommProtocol"
+#endif
 
 	State = E_OK;
 	return State;
@@ -177,7 +222,8 @@ Std_ReturnType Bootloader_FlashWrite(uint64 Data)
 		{
 			return State;
 		}
-		else{
+		else
+		{
 			Application_Add += 4;
 			if(WriteComplete != FLASH_WriteWord(Application_Add, (uint32)(Data >> 32)))
 			{
@@ -188,7 +234,8 @@ Std_ReturnType Bootloader_FlashWrite(uint64 Data)
 			}
 		}
 	}
-	else{
+	else
+	{
 		return State;
 	}
 

@@ -115,9 +115,6 @@ Std_ReturnType Install_Image(void)
 
 	while(1)
 	{
-		/* Initiate IHexFrame */
-		IHexFrame.valid = FALSE;
-
 		/* Receive IHex Frame in ASCII wise */
 		for(ui8Count = 0; ui8Count < MaxFrameLength; ui8Count++)
 		{
