@@ -12,8 +12,10 @@
 #include "Platform_Types.h"
 #include "uC_Dependencies.h"
 
+
 #if(STM32f103 == BOOTLOADER_TARGET)
 
+#if(Bootloader_UART == BOOTLOADER_CommProtocol)
 /*************** Select the USART or the UART peripheral *********************/
 #ifndef	UART_1
 #define UART_1	(1U)
@@ -46,6 +48,11 @@
 #define Bootloader_UART_Rate	UART_115200
 /*****************************************************************************/
 
+void Bootloader_UARTInit(void);
+
+#endif
+
+void COM_InterruptSetter(pFunction ptr);
 
 #endif
 

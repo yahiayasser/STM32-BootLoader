@@ -14,14 +14,31 @@
 #define CONFIGURATION_SW_PATCH_VERSION           (0U)
 
 
-#define Bootloader_UART	(0x0U)
-#define Bootloader_CAN	(0x1U)
-#define Bootloader_USB	(0x2U)
+#define Bootloader_UART	(0U)
+#define Bootloader_CAN	(1U)
+#define Bootloader_USB	(2U)
+
+#define Bootloader_Polling		(1U)
+#define Bootloader_Interrupt	(2U)
 
 
+/*	FLASH_WRITE_DATA_SIZE_HALFWORD
+ * 	FLASH_WRITE_DATA_SIZE_WORD
+ * 	FLASH_WRITE_DATA_SIZE_DOUBLEWORD
+ */
 #define BOOTLOADER_FlashProgrammedDataSize	FLASH_WRITE_DATA_SIZE_WORD
 
+/*	Bootloader_UART
+ * 	Bootloader_CAN
+ * 	Bootloader_USB
+ */
 #define BOOTLOADER_CommProtocol		Bootloader_UART
+
+/*
+	Bootloader_Polling
+	Bootloader_Interrupt
+ */
+#define BOOTLOADER_Handle			Bootloader_Polling
 
 /*
 	Enable	: STD_ON

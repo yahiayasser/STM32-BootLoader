@@ -90,5 +90,7 @@ typedef uint32 Bootloader_FlashAddress;
 __attribute__((section(".boot_code")))
 Std_ReturnType Bootloader(Bootloader_SignalType signal);
 
+void stub(void);
+
 
 #endif /* BOOTLOADER_H_ */

@@ -6,7 +6,7 @@
  */
 
 
-#include "UART_Config.h"
+#include <COM_Config.h>
 
 USART_InitTypeDef BootloaderUART =
 {
@@ -14,6 +14,6 @@ USART_InitTypeDef BootloaderUART =
 		USART_WordLength_8b,
 		USART_StopBits_1,
 		USART_Parity_No,
-		USART_Mode_Rx,
+		USART_Mode_Rx | USART_Mode_Tx,
 		USART_HardwareFlowControl_None
 };
