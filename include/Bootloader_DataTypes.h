@@ -12,9 +12,9 @@ typedef uint8 Std_ReturnType;
 #define E_NOT_OK 				(Std_ReturnType)1
 
 typedef uint8 Bootloader_SizeOfData;
-#define FLASH_WRITE_DATA_SIZE_HALFWORD    ((Bootloader_SizeOfData)1U)  /*!< Program a half-word (16-bit) at a specified address   */
-#define FLASH_WRITE_DATA_SIZE_WORD        ((Bootloader_SizeOfData)2U)  /*!< Program a word (32-bit) at a specified address        */
-#define FLASH_WRITE_DATA_SIZE_DOUBLEWORD  ((Bootloader_SizeOfData)3U)  /*!< Program a double word (64-bit) at a specified address */
+#define FLASH_WRITE_DATA_SIZE_HALFWORD    ((Bootloader_SizeOfData)0x10)  /*!< Program a half-word (16-bit) at a specified address   */
+#define FLASH_WRITE_DATA_SIZE_WORD        ((Bootloader_SizeOfData)0x20)  /*!< Program a word (32-bit) at a specified address        */
+#define FLASH_WRITE_DATA_SIZE_DOUBLEWORD  ((Bootloader_SizeOfData)0x40)  /*!< Program a double word (64-bit) at a specified address */
 
 
 /* Maximum size of data in IHex frame

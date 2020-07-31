@@ -10,6 +10,9 @@ static void Bootloader_UnlockFlash(void);
 __attribute__((section(".boot_code")))
 static void Bootloader_LockFlash(void);
 
+__attribute__((section(".boot_code")))
+static void Bootloader_EditData(uint8* pData, uint8* ByteCount);
+
 static boolean FlashIsAlreadyUnocked_Flag = FALSE;
 static uint8 FlashDontLock_Count = 0;
 
@@ -90,14 +93,41 @@ Std_ReturnType Bootloader_ReceiveFrame(void* Frame)
 	COMReceive((uint16)1,						(void*)&(Frame_IHex.checksum));
 
 	COMReceive((uint16)1, (void*)&Temp);
-	if(Temp != ':')
+	if(Temp != '\r' || Temp != '\n')
 	{
 		return State;
 	}
-	COMReceive((uint16)1, (void*)&Temp);
-	if(Temp != ':')
+
+#elif(Motorola_S_Record_Type == BOOTLOADER_FrameType)
+
+#elif(RawBinary_Type == BOOTLOADER_FrameType)
+
+#else
+#error "Invalid value of BOOTLOADER_CommProtocol"
+#endif
+
+	State = E_OK;
+	return State;
+}
+
+Std_ReturnType Bootloader_ParseFrame(void* Frame)
+{
+	Std_ReturnType State = E_NOT_OK;
+
+#if(IntelHex_Type == BOOTLOADER_FrameType)
+
+	IHex_Frame Frame_IHex = *((IHex_Frame*) Frame);
+
+	if(IHEX_DATA == Frame_IHex.record_type)
 	{
-		return State;
+		Application_Add |= Frame_IHex.address;
+
+		Bootloader_EditData(Frame_IHex.data, &(Frame_IHex.byte_count));
+		Bootloader_FlashWrite(Frame_IHex.byte_count, Frame_IHex.data);
+	}
+	else if (IHEX_ELA == Frame_IHex.record_type)
+	{
+		Application_Add = (Application_Add & 0xFF) | (Frame_IHex.address << 16);
 	}
 
 #elif(Motorola_S_Record_Type == BOOTLOADER_FrameType)
@@ -190,47 +220,59 @@ void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size)
 	SizeOfDataTobeWritten = size;
 }
 
-Std_ReturnType Bootloader_FlashWrite(uint64 Data)
+Std_ReturnType Bootloader_FlashWrite(uint8 Byte_Count, void* pData)
 {
 	Std_ReturnType State = E_NOT_OK;
 
 	Bootloader_UnlockFlash();
 
+#if(IntelHex_Type == BOOTLOADER_FrameType)
+
+	uint16* pIHexData = (uint16*) pData;
+
 	if(FLASH_WRITE_DATA_SIZE_HALFWORD == SizeOfDataTobeWritten)
 	{
-		if(WriteComplete != FLASH_WriteHalfWord(Application_Add, Data))
+		for(uint8 count = 0; count < (Byte_Count >> 1); count++)
 		{
-			return State;
-		}
-		else{
-			Application_Add += 2;
+			if(WriteComplete != FLASH_WriteHalfWord(Application_Add, pIHexData[count]))
+			{
+				return State;
+			}else
+			{
+				Application_Add += 2;
+			}
 		}
 	}
 	else if(FLASH_WRITE_DATA_SIZE_WORD == SizeOfDataTobeWritten)
 	{
-		if(WriteComplete != FLASH_WriteWord(Application_Add, Data))
+		for(uint8 count = 0; count < (Byte_Count >> 2); count++)
 		{
-			return State;
-		}
-		else{
-			Application_Add += 4;
+			if(WriteComplete != FLASH_WriteHalfWord(Application_Add, pIHexData[count]))
+			{
+				return State;
+			}else
+			{
+				Application_Add += 4;
+			}
 		}
 	}
 	else if(FLASH_WRITE_DATA_SIZE_DOUBLEWORD == SizeOfDataTobeWritten)
 	{
-		if(WriteComplete != FLASH_WriteWord(Application_Add, Data))
+		for(uint8 count = 0; count < (Byte_Count >> 3); count++)
 		{
-			return State;
-		}
-		else
-		{
-			Application_Add += 4;
-			if(WriteComplete != FLASH_WriteWord(Application_Add, (uint32)(Data >> 32)))
+			if(WriteComplete != FLASH_WriteHalfWord(Application_Add, pIHexData[count]))
 			{
 				return State;
-			}
-			else{
+			}else
+			{
 				Application_Add += 4;
+				if(WriteComplete != FLASH_WriteHalfWord(Application_Add, pIHexData[count]))
+				{
+					return State;
+				}else
+				{
+					Application_Add += 4;
+				}
 			}
 		}
 	}
@@ -238,6 +280,14 @@ Std_ReturnType Bootloader_FlashWrite(uint64 Data)
 	{
 		return State;
 	}
+
+#elif(Motorola_S_Record_Type == BOOTLOADER_FrameType)
+
+#elif(RawBinary_Type == BOOTLOADER_FrameType)
+
+#else
+#error "Invalid value of BOOTLOADER_CommProtocol"
+#endif
 
 	Bootloader_LockFlash();
 
@@ -256,5 +306,46 @@ void Bootloader_JumpToApp(void)
 	Disable_Interrupts();
 	SystemReset();
 	while(1);
+}
+
+static void Bootloader_EditData(uint8* pData, uint8* ByteCount)
+{
+	uint8 count = *ByteCount;
+	if(FLASH_WRITE_DATA_SIZE_HALFWORD == SizeOfDataTobeWritten)
+	{
+		if((count%2) != 0)
+		{
+			pData[count] = 0xFF;
+			count++;
+		}
+	}
+	else if(FLASH_WRITE_DATA_SIZE_WORD == SizeOfDataTobeWritten)
+	{
+		while((count%4) != 0)
+		{
+			pData[count] = 0xFF;
+			count++;
+		}
+	}
+	else if(FLASH_WRITE_DATA_SIZE_DOUBLEWORD == SizeOfDataTobeWritten)
+	{
+		while((count%8) != 0)
+		{
+			pData[count] = 0xFF;
+			count++;
+		}
+	}
+	else
+	{
+		return;
+	}
+
+	*ByteCount = count;
+}
+
+void Bootloader_Main(void)
+{
+	Bootloader_Init();
+	Bootloader_Start();
 }
 

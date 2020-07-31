@@ -31,7 +31,7 @@ __attribute__((section(".boot_code")))
 Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType);
 
 __attribute__((section(".boot_code")))
-Std_ReturnType Bootloader_FlashWrite(uint64 Data);
+Std_ReturnType Bootloader_FlashWrite(uint8 Byte_Count, void* pData);
 
 __attribute__((section(".boot_code")))
 Std_ReturnType Bootloader_Start(void);
@@ -47,6 +47,12 @@ void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size);
 
 __attribute__((section(".boot_code")))
 Std_ReturnType Bootloader_ReceiveFrame(void* Frame);
+
+__attribute__((section(".boot_code")))
+Std_ReturnType Bootloader_ParseFrame(void* Frame);
+
+__attribute__((section(".boot_code")))
+void Bootloader_JumpToApp(void);
 
 
 #endif /* BOOTLOADER_INTERFACE_H_ */

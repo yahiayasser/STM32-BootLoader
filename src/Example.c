@@ -35,7 +35,6 @@ int main(void)
 
 	Bootloader_Init();
 	Bootloader(1);
-	Bootloader_FlashWrite(0x1234);
 
 	while (1)
 	  {
