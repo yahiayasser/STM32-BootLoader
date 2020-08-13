@@ -16,10 +16,12 @@ static void Bootloader_EditData(uint8* pData, uint8* ByteCount);
 static boolean FlashIsAlreadyUnocked_Flag = FALSE;
 static uint8 FlashDontLock_Count = 0;
 
-static Bootloader_FlashAddress Application_Add = AppStartAddress;
-static Bootloader_SizeOfData SizeOfDataTobeWritten = BOOTLOADER_FlashProgrammedDataSize;
+__attribute__((section(".boot_flags")))
+Bootloader_Info FlashInfo;
 
-pFunction Jump_To_Application;
+Bootloader_Info Temp_FlashInfo;
+
+static Bootloader_SizeOfData SizeOfDataTobeWritten = BOOTLOADER_FlashProgrammedDataSize;
 
 Bootloader_Version BootloaderVersion;
 
@@ -55,12 +57,33 @@ static void Bootloader_LockFlash(void)
 Std_ReturnType Bootloader_Init(void)
 {
 	Std_ReturnType State = E_NOT_OK;
+	Bootloader_EraseType pErase;
+	Bootloader_Info* pFlashInfo = &FlashInfo;
 
 	Bootloader_HW_Init();
 
 	Bootloader_UnlockFlash();
 	FlashClrFlags();
 	Bootloader_LockFlash();
+
+	Temp_FlashInfo = *pFlashInfo;
+
+	if(Temp_FlashInfo.FirstTime_Flag != TRUE)
+	{
+		Temp_FlashInfo.AppAddress = AppStartAddress;
+		Temp_FlashInfo.ApplicationSize = 0x00;
+		Temp_FlashInfo.Boot_Flag = TRUE;
+		Temp_FlashInfo.BootloaderAddress = BootloaderImageStartAddress;
+	}
+
+	Temp_FlashInfo.BootSuccesfull_Flag = FALSE;
+
+	pErase.EraseType = ERASE_PAGE;
+	pErase.StartPage = BootloaderFlagIndex;
+
+	Bootloader_FlashErase(&pErase);
+	Bootloader_ChangeWriteDataSize(FLASH_WRITE_DATA_SIZE_WORD);
+	Bootloader_FlashWrite(BootloaderFlagStartAddress, 16, (Bootloader_Info*)(&Temp_FlashInfo));
 
 	BootloaderVersion.major = BOOTLOADER_SW_MAJOR_VERSION;
 	BootloaderVersion.minor = BOOTLOADER_SW_MINOR_VERSION;
@@ -120,14 +143,15 @@ Std_ReturnType Bootloader_ParseFrame(void* Frame)
 
 	if(IHEX_DATA == Frame_IHex.record_type)
 	{
-		Application_Add |= Frame_IHex.address;
+		Temp_FlashInfo.AppAddress |= Frame_IHex.address;
 
 		Bootloader_EditData(Frame_IHex.data, &(Frame_IHex.byte_count));
-		Bootloader_FlashWrite(Frame_IHex.byte_count, Frame_IHex.data);
+		Bootloader_FlashWrite(Temp_FlashInfo.AppAddress, Frame_IHex.byte_count, Frame_IHex.data);
+		Temp_FlashInfo.AppAddress += Frame_IHex.byte_count;
 	}
 	else if (IHEX_ELA == Frame_IHex.record_type)
 	{
-		Application_Add = (Application_Add & 0xFF) | (Frame_IHex.address << 16);
+		Temp_FlashInfo.AppAddress = (Temp_FlashInfo.AppAddress & 0xFF) | (Frame_IHex.address << 16);
 	}
 
 #elif(Motorola_S_Record_Type == BOOTLOADER_FrameType)
@@ -146,10 +170,9 @@ Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType)
 {
 	Std_ReturnType State = E_NOT_OK;
 
-	Bootloader_UnlockFlash();
-
 	if(ERASE_PAGE == pEraseType -> EraseType)
 	{
+		Bootloader_UnlockFlash();
 		if(EraseComplete != PageErase(pEraseType -> StartPage))
 		{
 			return State;
@@ -161,6 +184,7 @@ Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType)
 		uint8 Iterations = pEraseType -> PageNo;
 		for(uint8 count = 0; count < Iterations; count++)
 		{
+			Bootloader_UnlockFlash();
 			if(EraseComplete != PageErase(Page + count))
 			{
 				return State;
@@ -169,6 +193,7 @@ Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType)
 	}
 	else if(ERASE_FLASH == pEraseType -> EraseType)
 	{
+		Bootloader_UnlockFlash();
 		if(EraseComplete != FlashErase())
 		{
 			return State;
@@ -184,35 +209,26 @@ Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType)
 	return State;
 }
 
-Std_ReturnType Bootloader_Start(void)
+void Bootloader_End(void)
 {
-	Std_ReturnType State = E_NOT_OK;
-	Application_Add = AppStartAddress;
+	Bootloader_EraseType pErase;
 
 	Bootloader_UnlockFlash();
-	if(WriteComplete != Bootloader_SetStartFlag())
-	{
-		return State;
-	}
 
-	State = E_OK;
-	return State;
-}
+	Temp_FlashInfo.BootSuccesfull_Flag = TRUE;
+	Temp_FlashInfo.Boot_Flag = FALSE;
+	Temp_FlashInfo.FirstTime_Flag = FALSE;
 
-Std_ReturnType Bootloader_End(void)
-{
-	Std_ReturnType State = E_NOT_OK;
+	pErase.EraseType = ERASE_PAGE;
+	pErase.StartPage = BootloaderFlagIndex;
 
-	if(Bootloader_NotCompleted != Bootloader_GetStartFlag())
-	{
-		return State;
-	}
-
-	Bootloader_ClearStartFlag();
+	Bootloader_FlashErase(&pErase);
+	Bootloader_ChangeWriteDataSize(FLASH_WRITE_DATA_SIZE_WORD);
+	Bootloader_FlashWrite(BootloaderFlagStartAddress, 16, (Bootloader_Info*)(&Temp_FlashInfo));
 
 	Bootloader_LockFlash();
-	State = E_OK;
-	return State;
+
+	Bootloader_JumpToApp();
 }
 
 void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size)
@@ -220,7 +236,7 @@ void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size)
 	SizeOfDataTobeWritten = size;
 }
 
-Std_ReturnType Bootloader_FlashWrite(uint8 Byte_Count, void* pData)
+Std_ReturnType Bootloader_FlashWrite(uint32 Address, uint8 Byte_Count, void* pData)
 {
 	Std_ReturnType State = E_NOT_OK;
 
@@ -228,51 +244,51 @@ Std_ReturnType Bootloader_FlashWrite(uint8 Byte_Count, void* pData)
 
 #if(IntelHex_Type == BOOTLOADER_FrameType)
 
-	uint16* pIHexData = (uint16*) pData;
 
 	if(FLASH_WRITE_DATA_SIZE_HALFWORD == SizeOfDataTobeWritten)
 	{
-		for(uint8 count = 0; count < (Byte_Count >> 1); count++)
+		uint16* pIHexData = (uint16*) pData;
+		Byte_Count = Byte_Count >> 1;
+		for(uint8 count = 0; count < Byte_Count; count++)
 		{
-			if(WriteComplete != FLASH_WriteHalfWord(Application_Add, pIHexData[count]))
+			if(WriteComplete != FLASH_WriteHalfWord(Address, pIHexData[count]))
 			{
 				return State;
-			}else
-			{
-				Application_Add += 2;
 			}
+			Address += 2;
 		}
 	}
 	else if(FLASH_WRITE_DATA_SIZE_WORD == SizeOfDataTobeWritten)
 	{
-		for(uint8 count = 0; count < (Byte_Count >> 2); count++)
+		uint32* pIHexData = (uint32*) pData;
+		Byte_Count = Byte_Count >> 2;
+		for(uint8 count = 0; count < Byte_Count; count++)
 		{
-			if(WriteComplete != FLASH_WriteHalfWord(Application_Add, pIHexData[count]))
+			if(WriteComplete != FLASH_WriteWord(Address, pIHexData[count]))
 			{
 				return State;
-			}else
-			{
-				Application_Add += 4;
 			}
+			Address += 4;
 		}
 	}
 	else if(FLASH_WRITE_DATA_SIZE_DOUBLEWORD == SizeOfDataTobeWritten)
 	{
-		for(uint8 count = 0; count < (Byte_Count >> 3); count++)
+		uint32* pIHexData = (uint32*) pData;
+		Byte_Count = Byte_Count >> 3;
+		for(uint8 count = 0; count < Byte_Count; count++)
 		{
-			if(WriteComplete != FLASH_WriteHalfWord(Application_Add, pIHexData[count]))
+			if(WriteComplete != FLASH_WriteWord(Address, pIHexData[count]))
 			{
 				return State;
 			}else
 			{
-				Application_Add += 4;
-				if(WriteComplete != FLASH_WriteHalfWord(Application_Add, pIHexData[count]))
+				Address += 4;
+				Temp_FlashInfo.AppAddress += 4;
+				if(WriteComplete != FLASH_WriteWord(Address, pIHexData[count]))
 				{
 					return State;
-				}else
-				{
-					Application_Add += 4;
 				}
+				Address += 4;
 			}
 		}
 	}
@@ -346,6 +362,22 @@ static void Bootloader_EditData(uint8* pData, uint8* ByteCount)
 void Bootloader_Main(void)
 {
 	Bootloader_Init();
-	Bootloader_Start();
+	Bootloader_End();
+}
+
+JumpMode BranchingCode(void)
+{
+	JumpMode retVal = APP_MODE;
+	Bootloader_Info* pInfo = &FlashInfo;
+
+	Temp_FlashInfo = *pInfo;
+
+	Temp_FlashInfo.Boot_Flag = TRUE;
+
+	if(Temp_FlashInfo.Boot_Flag == TRUE)
+	{
+		retVal = BOOT_MODE;
+	}
+	return retVal;
 }
 

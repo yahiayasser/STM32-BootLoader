@@ -16,6 +16,10 @@ typedef uint8 Bootloader_SizeOfData;
 #define FLASH_WRITE_DATA_SIZE_WORD        ((Bootloader_SizeOfData)0x20)  /*!< Program a word (32-bit) at a specified address        */
 #define FLASH_WRITE_DATA_SIZE_DOUBLEWORD  ((Bootloader_SizeOfData)0x40)  /*!< Program a double word (64-bit) at a specified address */
 
+typedef uint8 JumpMode;
+#define APP_MODE 					(JumpMode)0
+#define BOOT_MODE 					(JumpMode)1
+
 
 /* Maximum size of data in IHex frame
  * Default:	16*/
@@ -52,6 +56,17 @@ typedef struct
 	uint8 StartPage;
 	uint8 PageNo;
 }Bootloader_EraseType;
+
+typedef struct
+{
+	FlashAddress AppAddress;
+	FlashAddress BootloaderAddress;
+	uint32 ApplicationSize;
+	boolean Boot_Flag;
+	boolean BootSuccesfull_Flag;
+	boolean FirstTime_Flag;
+	uint8 stub;
+}Bootloader_Info;
 
 typedef struct
 {

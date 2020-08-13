@@ -53,15 +53,22 @@ ENTRY(_start)
 
 SECTIONS
 {
-    /*
-     * For Cortex-M devices, the beginning of the startup code is stored in
-     * the .isr_vector section, which goes to FLASH. 
-     */
+
+    .boot_flags :
+    {
+        *(.boot_flags*);
+    } >BOOTFLAGS
+
 
     .boot_code :
     {
         *(.boot_code*);
     } >BOOTLOADER
+
+    /*
+     * For Cortex-M devices, the beginning of the startup code is stored in
+     * the .isr_vector section, which goes to FLASH. 
+     */
 
     .isr_vector : ALIGN(4)
     {

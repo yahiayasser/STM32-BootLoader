@@ -67,7 +67,7 @@ typedef struct{
 #define pSCB	((SCB_registers*) 0xE000ED00)
 
 /*----------------------- Hex file format ------------------------*/
-#define BOOTLOADER_FILE_FORMAT	Intel_HEX
+#define BOOTLOADER_FILE_FORMAT					Intel_HEX
 
 /*----------------------- Data word sizes in bits ------------------------*/
 #define CONFIG_DATA_SIZE_BITS                   (WORD_SIZE_32)              /*  STM32f103 data bus is 32-bit wide.                            */
@@ -81,28 +81,40 @@ typedef struct{
 /*----------------------- Data word memory order -------------------------*/
 #define CONFIG_ENDIAN_TYPE                      (ENDIAN_TYPE_LITTLE)        /*  ARM is a little endian processor.                                   */
 
-#define FlashStartAddress		(0x08000000)
-#define FlashEndAddress			(0x0800FFFF)
-#define FlashSize				(0x10000)	// In bytes
-#define FlashPageSize			(0x400)
-#define FlashNumberOfPages		(FlashSize/FlashPageSize)
+#define FlashStartAddress				(0x08000000)
+#define FlashEndAddress					(0x0800FFFF)
+#define FlashSize						(0x10000)	// In bytes
+#define FlashPageSize					(0x400)
+#define FlashNumberOfPages				(FlashSize/FlashPageSize)
 
 
-#define AppStartAddress			(0x08000000)
-#define AppEndAddress			(0x0800BFFF)
-#define AppSize					(0xC000)	// In bytes
-#define AppNumberOfPages		(AppSize/FlashPageSize)
+#define AppStartAddress					(0x08000000)
+#define AppEndAddress					(0x0800BFFF)
+#define AppSize							(0xC000)	// In bytes
+#define AppNumberOfPages				(AppSize/FlashPageSize)
+#define AppIndex						((AppStartAddress - FlashStartAddress)/FlashPageSize)
 
 
-#define BootloaderStartAddress	(0x0800C000)
-#define BootloaderEndAddress	(0x0800FFFF)
-#define BootloaderSize			(0x4000)	// In bytes
-#define BootloaderNumberOfPages	(BootloaderSize/FlashPageSize)
+#define BootloaderImageStartAddress		(0x0800C000)
+#define BootloaderImageEndAddress		(0x0800FFFF)
+#define BootloaderImageSize				(0x4000)	// In bytes
+#define BootloaderImageNumberOfPages	(BootloaderImageSize/FlashPageSize)
+#define BootloaderImageIndex			((BootloaderImageStartAddress - FlashStartAddress)/FlashPageSize)
+
+
+#define BootloaderFlagStartAddress		(0x0800BC00)
+#define BootloaderFlagEndAddress		(0x0800BFFF)
+#define BootloaderFlagSize				(0x400)	// In bytes
+#define BootloaderFlagNumberOfPages		(BootloaderFlagSize/FlashPageSize)
+#define BootloaderFlagIndex				((BootloaderFlagStartAddress - FlashStartAddress)/FlashPageSize)
 
 
 #define Bootloader_StartFlagAddress		(0x1FFFF804)
 #define Bootloader_NotCompleted 		0xAA
 #define Bootloader_Completed 			0xFF
+
+
+#define JumpToBootloader_Flag		(0x1FFFF806)
 
 #define SystemReset()	pSCB -> SCB_AIRCR = ((0x05FAUL << 16) | 4)
 

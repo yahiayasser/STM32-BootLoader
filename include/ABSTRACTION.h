@@ -18,8 +18,10 @@
 	FLASH_SetLatency(FLASH_Latency_0);\
 }
 
-#define FlashLock()	FLASH_Lock()
-#define FlashUnlock()	FLASH_Unlock()
+#define FlashLock()		FLASH_Lock()
+#define FlashUnlock()	{\
+	FLASH_Unlock();\
+}
 
 #define FlashClrFlags()	{\
 	FLASH_ClearFlag(FLASH_FLAG_PGERR);\
@@ -33,10 +35,6 @@
 
 #define FLASH_WriteHalfWord(Add, data)	FLASH_ProgramHalfWord(Add, (uint16)data)
 #define FLASH_WriteWord(Add, data)		FLASH_ProgramWord(Add, (uint32)data)
-
-#define Bootloader_SetStartFlag()		FLASH_ProgramOptionByteData((uint32)Bootloader_StartFlagAddress, Bootloader_NotCompleted)
-#define Bootloader_GetStartFlag()		((uint8)((FLASH_GetUserOptionByte() >> 8) && 0x000000FF))
-#define Bootloader_ClearStartFlag()		FLASH_ProgramOptionByteData((uint32)Bootloader_StartFlagAddress, Bootloader_Completed)
 
 #define SetNewVectorTable()		NVIC_SetVectorTable(NVIC_VectTab_FLASH, Application_Add);
 

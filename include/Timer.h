@@ -25,33 +25,25 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#ifndef TIMER_H_
+#define TIMER_H_
+
+#include "cmsis_device.h"
+
 // ----------------------------------------------------------------------------
 
+#define TIMER_FREQUENCY_HZ (1000u)
 
-#include "Timer.h"
-#include "BlinkLed.h"
-#include "Bootloader.h"
+typedef uint32_t timer_ticks_t;
 
+extern volatile timer_ticks_t timer_delayCount;
 
-// Keep the LED on for 2/3 of a second.
-#define BLINK_ON_TICKS  (TIMER_FREQUENCY_HZ * 3 / 4)
-#define BLINK_OFF_TICKS (TIMER_FREQUENCY_HZ - BLINK_ON_TICKS)
+extern void
+timer_start (void);
 
-int main(void)
-{
+extern void
+timer_sleep (timer_ticks_t ticks);
 
-	uint32_t seconds = 0;
-	uint8 data1, data2;
-	timer_start();
+// ----------------------------------------------------------------------------
 
-	blink_led_init();
-
-	if(BranchingCode() == BOOT_MODE)
-	{
-		Bootloader_Main();
-	}
-
-	while (1)
-	{
-	}
-}
+#endif // TIMER_H_

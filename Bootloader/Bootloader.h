@@ -87,10 +87,11 @@ typedef uint8 Bootloader_ServiceId;
 #endif
 
 
-typedef uint32 Bootloader_FlashAddress;
 
 __attribute__((section(".boot_code")))
 Std_ReturnType Bootloader(Bootloader_SignalType signal);
+
+JumpMode BranchingCode(void);
 
 void stub(void);
 

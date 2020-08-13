@@ -23,7 +23,7 @@ Std_ReturnType Bootloader(Bootloader_SignalType signal)
 		pEraseType.EraseType = ERASE_SECTOR;
 		pEraseType.StartPage = (AppStartAddress - FlashStartAddress)/FlashPageSize;
 		pEraseType.PageNo = (FlashStartAddress + AppSize - AppStartAddress)/FlashPageSize;
-		if(E_NOT_OK != Bootloader_FlashErase(&pEraseType))
+		if(E_OK != Bootloader_FlashErase(&pEraseType))
 		{
 			return State;
 		}
@@ -33,7 +33,7 @@ Std_ReturnType Bootloader(Bootloader_SignalType signal)
 		pEraseType.EraseType = ERASE_SECTOR;
 		pEraseType.StartPage = (BOOTLOADER_START_ADD - FlashStartAddress)/FlashPageSize;
 		pEraseType.PageNo = (AppStartAddress - FlashStartAddress)/FlashPageSize;
-		if(E_NOT_OK != Bootloader_FlashErase(&pEraseType))
+		if(E_OK != Bootloader_FlashErase(&pEraseType))
 		{
 			return State;
 		}
@@ -41,7 +41,7 @@ Std_ReturnType Bootloader(Bootloader_SignalType signal)
 
 	case REMOVE_BOTH_APP_BOOTLOADER:
 		pEraseType.EraseType = ERASE_FLASH;
-		if(E_NOT_OK != Bootloader_FlashErase(&pEraseType))
+		if(E_OK != Bootloader_FlashErase(&pEraseType))
 		{
 			return State;
 		}
@@ -56,7 +56,12 @@ Std_ReturnType Bootloader(Bootloader_SignalType signal)
 	case INSTALL_BOOTLOADER:
 		break;
 	default:
-		return State;
+		pEraseType.EraseType = ERASE_PAGE;
+		pEraseType.StartPage = 10;
+		if(E_OK != Bootloader_FlashErase(&pEraseType))
+		{
+			return State;
+		}
 		break;
 	}
 

@@ -108,4 +108,6 @@ typedef void (*pFunction)(void);
 #define NULL_Address	((void *)0)
 #endif
 
+typedef uint32 FlashAddress;
+
 #endif

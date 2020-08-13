@@ -25,33 +25,62 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "Timer.h"
+#include "cortexm/ExceptionHandlers.h"
+
 // ----------------------------------------------------------------------------
 
+#if defined(USE_HAL_DRIVER)
+void HAL_IncTick(void);
+#endif
 
-#include "Timer.h"
-#include "BlinkLed.h"
-#include "Bootloader.h"
+// Forward declarations.
 
+void
+timer_tick (void);
 
-// Keep the LED on for 2/3 of a second.
-#define BLINK_ON_TICKS  (TIMER_FREQUENCY_HZ * 3 / 4)
-#define BLINK_OFF_TICKS (TIMER_FREQUENCY_HZ - BLINK_ON_TICKS)
+// ----------------------------------------------------------------------------
 
-int main(void)
+volatile timer_ticks_t timer_delayCount;
+
+// ----------------------------------------------------------------------------
+
+void
+timer_start (void)
 {
-
-	uint32_t seconds = 0;
-	uint8 data1, data2;
-	timer_start();
-
-	blink_led_init();
-
-	if(BranchingCode() == BOOT_MODE)
-	{
-		Bootloader_Main();
-	}
-
-	while (1)
-	{
-	}
+  // Use SysTick as reference for the delay loops.
+  SysTick_Config (SystemCoreClock / TIMER_FREQUENCY_HZ);
 }
+
+void
+timer_sleep (timer_ticks_t ticks)
+{
+  timer_delayCount = ticks;
+
+  // Busy wait until the SysTick decrements the counter to zero.
+  while (timer_delayCount != 0u)
+    ;
+}
+
+void
+timer_tick (void)
+{
+  // Decrement to zero the counter used by the delay routine.
+  if (timer_delayCount != 0u)
+    {
+      --timer_delayCount;
+    }
+}
+
+// ----- SysTick_Handler() ----------------------------------------------------
+
+void
+SysTick_Handler (void)
+{
+#if defined(USE_HAL_DRIVER)
+  HAL_IncTick();
+#endif
+  timer_tick ();
+}
+
+// ----------------------------------------------------------------------------

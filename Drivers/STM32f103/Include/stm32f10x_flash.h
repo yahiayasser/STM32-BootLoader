@@ -365,34 +365,46 @@ typedef enum
   */
 
 /*------------ Functions used for all STM32F10x devices -----*/
+__attribute__((section(".boot_code")))
 void FLASH_SetLatency(uint32_t FLASH_Latency);
 void FLASH_HalfCycleAccessCmd(uint32_t FLASH_HalfCycleAccess);
 void FLASH_PrefetchBufferCmd(uint32_t FLASH_PrefetchBuffer);
+__attribute__((section(".boot_code")))
 void FLASH_Unlock(void);
+__attribute__((section(".boot_code")))
 void FLASH_Lock(void);
+__attribute__((section(".boot_code")))
 FLASH_Status FLASH_ErasePage(uint32_t Page_Address);
+__attribute__((section(".boot_code")))
 FLASH_Status FLASH_EraseAllPages(void);
 FLASH_Status FLASH_EraseOptionBytes(void);
+__attribute__((section(".boot_code")))
 FLASH_Status FLASH_ProgramWord(uint32_t Address, uint32_t Data);
+__attribute__((section(".boot_code")))
 FLASH_Status FLASH_ProgramHalfWord(uint32_t Address, uint16_t Data);
+__attribute__((section(".boot_code")))
 FLASH_Status FLASH_ProgramOptionByteData(uint32_t Address, uint8_t Data);
 FLASH_Status FLASH_EnableWriteProtection(uint32_t FLASH_Pages);
 FLASH_Status FLASH_ReadOutProtection(FunctionalState NewState);
 FLASH_Status FLASH_UserOptionByteConfig(uint16_t OB_IWDG, uint16_t OB_STOP, uint16_t OB_STDBY);
+__attribute__((section(".boot_code")))
 uint32_t FLASH_GetUserOptionByte(void);
 uint32_t FLASH_GetWriteProtectionOptionByte(void);
 FlagStatus FLASH_GetReadOutProtectionStatus(void);
 FlagStatus FLASH_GetPrefetchBufferStatus(void);
 void FLASH_ITConfig(uint32_t FLASH_IT, FunctionalState NewState);
 FlagStatus FLASH_GetFlagStatus(uint32_t FLASH_FLAG);
+__attribute__((section(".boot_code")))
 void FLASH_ClearFlag(uint32_t FLASH_FLAG);
 FLASH_Status FLASH_GetStatus(void);
+__attribute__((section(".boot_code")))
 FLASH_Status FLASH_WaitForLastOperation(uint32_t Timeout);
 
 /*------------ New function used for all STM32F10x devices -----*/
 void FLASH_UnlockBank1(void);
 void FLASH_LockBank1(void);
 FLASH_Status FLASH_EraseAllBank1Pages(void);
+__attribute__((section(".boot_code")))
 FLASH_Status FLASH_GetBank1Status(void);
 FLASH_Status FLASH_WaitForLastBank1Operation(uint32_t Timeout);
 

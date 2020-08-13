@@ -31,13 +31,10 @@ __attribute__((section(".boot_code")))
 Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType);
 
 __attribute__((section(".boot_code")))
-Std_ReturnType Bootloader_FlashWrite(uint8 Byte_Count, void* pData);
+Std_ReturnType Bootloader_FlashWrite(uint32 Address, uint8 Byte_Count, void* pData);
 
 __attribute__((section(".boot_code")))
-Std_ReturnType Bootloader_Start(void);
-
-__attribute__((section(".boot_code")))
-Std_ReturnType Bootloader_End(void);
+void Bootloader_End(void);
 
 __attribute__((section(".boot_code")))
 void Bootloader_GetVersion(Bootloader_Version* version);
@@ -53,6 +50,9 @@ Std_ReturnType Bootloader_ParseFrame(void* Frame);
 
 __attribute__((section(".boot_code")))
 void Bootloader_JumpToApp(void);
+
+__attribute__((section(".boot_code")))
+void Bootloader_Main(void);
 
 
 #endif /* BOOTLOADER_INTERFACE_H_ */

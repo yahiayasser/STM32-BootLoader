@@ -647,7 +647,7 @@ FLASH_Status FLASH_EraseOptionBytes(void)
       /* Enable the Option Bytes Programming operation */
       FLASH->CR |= CR_OPTPG_Set;
       /* Restore the last read protection Option Byte value */
-      OB->RDP = (uint16_t)rdptmp; 
+      OB->RDP = (uint16_t)rdptmp;
       /* Wait for last operation to be completed */
       status = FLASH_WaitForLastOperation(ProgramTimeout);
  
