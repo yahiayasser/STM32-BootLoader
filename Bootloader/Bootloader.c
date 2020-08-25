@@ -242,10 +242,9 @@ JumpMode BranchingCode(void)
 {
 	JumpMode retVal = APP_MODE;
 	Bootloader_Info* pInfo = (Bootloader_Info*)BootloaderFlagStartAddress;
+	Bootloader_Info BootInfo = *(Bootloader_Info*)pInfo;
 
-	Temp_FlashInfo = *(Bootloader_Info*)pInfo;
-
-	if(Temp_FlashInfo.Boot_Flag == TRUE && Temp_FlashInfo.NotFirstTime_Flag == TRUE)
+	if(BootInfo.Boot_Flag == TRUE && BootInfo.NotFirstTime_Flag == TRUE)
 	{
 		Bootloader_JumpToBootloader = Temp_FlashInfo.Main;
 		retVal = BOOT_MODE;
