@@ -3,18 +3,8 @@
 
 #include "Bootloader.h"
 
-
-__attribute__((section(".boot_code")))
-static void Bootloader_UnlockFlash(void);
-
-__attribute__((section(".boot_code")))
-static void Bootloader_LockFlash(void);
-
 __attribute__((section(".boot_code")))
 static void Bootloader_EditData(uint8* pData, uint8* ByteCount);
-
-static boolean FlashIsAlreadyUnocked_Flag = FALSE;
-static uint8 FlashDontLock_Count = 0;
 
 __attribute__((section(".boot_flags")))
 Bootloader_Info FlashInfo;
@@ -25,34 +15,8 @@ static Bootloader_SizeOfData SizeOfDataTobeWritten = BOOTLOADER_FlashProgrammedD
 
 Bootloader_Version BootloaderVersion;
 
+pFunction Bootloader_JumpToBootloader = stub;
 
-
-static void Bootloader_UnlockFlash(void)
-{
-	if(False == FlashIsAlreadyUnocked_Flag)
-	{
-
-		FlashUnlock();
-		FlashIsAlreadyUnocked_Flag = TRUE;
-	}
-	else
-	{
-		FlashDontLock_Count++;
-	}
-}
-
-static void Bootloader_LockFlash(void)
-{
-	if(FlashDontLock_Count)
-	{
-		FlashDontLock_Count--;
-	}
-	else
-	{
-		FlashLock();
-		FlashIsAlreadyUnocked_Flag = FALSE;
-	}
-}
 
 Std_ReturnType Bootloader_Init(void)
 {
@@ -62,26 +26,25 @@ Std_ReturnType Bootloader_Init(void)
 
 	Bootloader_HW_Init();
 
-	Bootloader_UnlockFlash();
-	FlashClrFlags();
-	Bootloader_LockFlash();
+	Mem_init();
 
 	Temp_FlashInfo = *pFlashInfo;
 
-	if(Temp_FlashInfo.FirstTime_Flag != TRUE)
+	if(Temp_FlashInfo.NotFirstTime_Flag != TRUE)
 	{
 		Temp_FlashInfo.AppAddress = AppStartAddress;
 		Temp_FlashInfo.ApplicationSize = 0x00;
-		Temp_FlashInfo.Boot_Flag = TRUE;
 		Temp_FlashInfo.BootloaderAddress = BootloaderImageStartAddress;
+		Temp_FlashInfo.NotFirstTime_Flag = TRUE;
 	}
 
 	Temp_FlashInfo.BootSuccesfull_Flag = FALSE;
+	Temp_FlashInfo.Main = BOOT_MAIN;
 
 	pErase.EraseType = ERASE_PAGE;
 	pErase.StartPage = BootloaderFlagIndex;
 
-	Bootloader_FlashErase(&pErase);
+	Mem_FlashErase(&pErase);
 	Bootloader_ChangeWriteDataSize(FLASH_WRITE_DATA_SIZE_WORD);
 	Bootloader_FlashWrite(BootloaderFlagStartAddress, 16, (Bootloader_Info*)(&Temp_FlashInfo));
 
@@ -166,67 +129,24 @@ Std_ReturnType Bootloader_ParseFrame(void* Frame)
 	return State;
 }
 
-Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType)
-{
-	Std_ReturnType State = E_NOT_OK;
-
-	if(ERASE_PAGE == pEraseType -> EraseType)
-	{
-		Bootloader_UnlockFlash();
-		if(EraseComplete != PageErase(pEraseType -> StartPage))
-		{
-			return State;
-		}
-	}
-	else if(ERASE_SECTOR == pEraseType -> EraseType)
-	{
-		uint8 Page = pEraseType -> StartPage;
-		uint8 Iterations = pEraseType -> PageNo;
-		for(uint8 count = 0; count < Iterations; count++)
-		{
-			Bootloader_UnlockFlash();
-			if(EraseComplete != PageErase(Page + count))
-			{
-				return State;
-			}
-		}
-	}
-	else if(ERASE_FLASH == pEraseType -> EraseType)
-	{
-		Bootloader_UnlockFlash();
-		if(EraseComplete != FlashErase())
-		{
-			return State;
-		}
-	}
-	else{
-		return State;
-	}
-
-	Bootloader_LockFlash();
-
-	State = E_OK;
-	return State;
-}
-
 void Bootloader_End(void)
 {
 	Bootloader_EraseType pErase;
 
-	Bootloader_UnlockFlash();
+	UnlockFlash();
 
 	Temp_FlashInfo.BootSuccesfull_Flag = TRUE;
 	Temp_FlashInfo.Boot_Flag = FALSE;
-	Temp_FlashInfo.FirstTime_Flag = FALSE;
+	Temp_FlashInfo.NotFirstTime_Flag = FALSE;
 
 	pErase.EraseType = ERASE_PAGE;
 	pErase.StartPage = BootloaderFlagIndex;
 
-	Bootloader_FlashErase(&pErase);
+	Mem_FlashErase(&pErase);
 	Bootloader_ChangeWriteDataSize(FLASH_WRITE_DATA_SIZE_WORD);
 	Bootloader_FlashWrite(BootloaderFlagStartAddress, 16, (Bootloader_Info*)(&Temp_FlashInfo));
 
-	Bootloader_LockFlash();
+	LockFlash();
 
 	Bootloader_JumpToApp();
 }
@@ -240,59 +160,12 @@ Std_ReturnType Bootloader_FlashWrite(uint32 Address, uint8 Byte_Count, void* pDa
 {
 	Std_ReturnType State = E_NOT_OK;
 
-	Bootloader_UnlockFlash();
+	UnlockFlash();
 
 #if(IntelHex_Type == BOOTLOADER_FrameType)
 
 
-	if(FLASH_WRITE_DATA_SIZE_HALFWORD == SizeOfDataTobeWritten)
-	{
-		uint16* pIHexData = (uint16*) pData;
-		Byte_Count = Byte_Count >> 1;
-		for(uint8 count = 0; count < Byte_Count; count++)
-		{
-			if(WriteComplete != FLASH_WriteHalfWord(Address, pIHexData[count]))
-			{
-				return State;
-			}
-			Address += 2;
-		}
-	}
-	else if(FLASH_WRITE_DATA_SIZE_WORD == SizeOfDataTobeWritten)
-	{
-		uint32* pIHexData = (uint32*) pData;
-		Byte_Count = Byte_Count >> 2;
-		for(uint8 count = 0; count < Byte_Count; count++)
-		{
-			if(WriteComplete != FLASH_WriteWord(Address, pIHexData[count]))
-			{
-				return State;
-			}
-			Address += 4;
-		}
-	}
-	else if(FLASH_WRITE_DATA_SIZE_DOUBLEWORD == SizeOfDataTobeWritten)
-	{
-		uint32* pIHexData = (uint32*) pData;
-		Byte_Count = Byte_Count >> 3;
-		for(uint8 count = 0; count < Byte_Count; count++)
-		{
-			if(WriteComplete != FLASH_WriteWord(Address, pIHexData[count]))
-			{
-				return State;
-			}else
-			{
-				Address += 4;
-				Temp_FlashInfo.AppAddress += 4;
-				if(WriteComplete != FLASH_WriteWord(Address, pIHexData[count]))
-				{
-					return State;
-				}
-				Address += 4;
-			}
-		}
-	}
-	else
+	if(Mem_FlashWrite(Address, Byte_Count, pData, SizeOfDataTobeWritten) != E_OK)
 	{
 		return State;
 	}
@@ -305,7 +178,7 @@ Std_ReturnType Bootloader_FlashWrite(uint32 Address, uint8 Byte_Count, void* pDa
 #error "Invalid value of BOOTLOADER_CommProtocol"
 #endif
 
-	Bootloader_LockFlash();
+	LockFlash();
 
 	State = E_OK;
 	return State;
@@ -368,14 +241,13 @@ void Bootloader_Main(void)
 JumpMode BranchingCode(void)
 {
 	JumpMode retVal = APP_MODE;
-	Bootloader_Info* pInfo = &FlashInfo;
+	Bootloader_Info* pInfo = (Bootloader_Info*)BootloaderFlagStartAddress;
 
-	Temp_FlashInfo = *pInfo;
+	Temp_FlashInfo = *(Bootloader_Info*)pInfo;
 
-	Temp_FlashInfo.Boot_Flag = TRUE;
-
-	if(Temp_FlashInfo.Boot_Flag == TRUE)
+	if(Temp_FlashInfo.Boot_Flag == TRUE && Temp_FlashInfo.NotFirstTime_Flag == TRUE)
 	{
+		Bootloader_JumpToBootloader = Temp_FlashInfo.Main;
 		retVal = BOOT_MODE;
 	}
 	return retVal;

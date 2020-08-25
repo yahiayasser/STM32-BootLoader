@@ -87,6 +87,11 @@ typedef volatile uint64 vuint64_t;
 typedef void (*pFunction)(void);
 
 
+typedef uint8 Std_ReturnType;
+#define E_OK 					(Std_ReturnType)0
+#define E_NOT_OK 				(Std_ReturnType)1
+
+
 //Optimized integer data types
 /** Boolean data type. **/
 ///[SWS_Platform_00034]

@@ -13,14 +13,26 @@
 #define API_SW_MINOR_VERSION           (0U)
 #define API_SW_PATCH_VERSION           (0U)
 
+#ifndef STD_HIGH
 #define STD_HIGH		0x01
+#endif
+#ifndef STD_LOW
 #define STD_LOW			0x00
+#endif
 
+#ifndef STD_ACTIVE
 #define STD_ACTIVE		0x01
+#endif
+#ifndef STD_IDLE
 #define STD_IDLE		0x00
+#endif
 
+#ifndef STD_ON
 #define STD_ON			0x01
+#endif
+#ifndef STD_OFF
 #define STD_OFF			0x00
+#endif
 
 #define BOOTLOADER_START_ADD	(0x08006000)
 

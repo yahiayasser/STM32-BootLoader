@@ -7,18 +7,20 @@
 #define BOOTLOADER_DATATYPES_SW_PATCH_VERSION           (0U)
 
 
-typedef uint8 Std_ReturnType;
-#define E_OK 					(Std_ReturnType)0
-#define E_NOT_OK 				(Std_ReturnType)1
-
-typedef uint8 Bootloader_SizeOfData;
-#define FLASH_WRITE_DATA_SIZE_HALFWORD    ((Bootloader_SizeOfData)0x10)  /*!< Program a half-word (16-bit) at a specified address   */
-#define FLASH_WRITE_DATA_SIZE_WORD        ((Bootloader_SizeOfData)0x20)  /*!< Program a word (32-bit) at a specified address        */
-#define FLASH_WRITE_DATA_SIZE_DOUBLEWORD  ((Bootloader_SizeOfData)0x40)  /*!< Program a double word (64-bit) at a specified address */
+#include "Mem_dataTypes.h"
+/* Checking between MEM and MEM_DataTypes Modules */
+#if ((BOOTLOADER_DATATYPES_SW_MAJOR_VERSION != MEM_DATATYPES_SW_MAJOR_VERSION)\
+ ||  (BOOTLOADER_DATATYPES_SW_MINOR_VERSION != MEM_DATATYPES_SW_MINOR_VERSION)\
+ ||  (BOOTLOADER_DATATYPES_SW_PATCH_VERSION != MEM_DATATYPES_SW_PATCH_VERSION))
+  #error "The SW version of Mem_dataTypes.h does not match the expected version"
+#endif
 
 typedef uint8 JumpMode;
 #define APP_MODE 					(JumpMode)0
 #define BOOT_MODE 					(JumpMode)1
+
+typedef FLASH_EraseType Bootloader_EraseType;
+typedef FLASH_SizeOfData Bootloader_SizeOfData;
 
 
 /* Maximum size of data in IHex frame
@@ -35,12 +37,6 @@ typedef enum{
 }IHex_RecordTypes;
 
 typedef enum{
-	ERASE_PAGE,
-	ERASE_SECTOR,
-	ERASE_FLASH
-}Flash_EraseType;
-
-typedef enum{
 	REMOVE_APP,
 	REMOVE_BOOTLOADER,
 	REMOVE_BOTH_APP_BOOTLOADER,
@@ -52,19 +48,13 @@ typedef enum{
 
 typedef struct
 {
-	Flash_EraseType EraseType;
-	uint8 StartPage;
-	uint8 PageNo;
-}Bootloader_EraseType;
-
-typedef struct
-{
+	pFunction Main;
 	FlashAddress AppAddress;
 	FlashAddress BootloaderAddress;
 	uint32 ApplicationSize;
 	boolean Boot_Flag;
 	boolean BootSuccesfull_Flag;
-	boolean FirstTime_Flag;
+	boolean NotFirstTime_Flag;
 	uint8 stub;
 }Bootloader_Info;
 

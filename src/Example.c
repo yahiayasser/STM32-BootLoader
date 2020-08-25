@@ -37,6 +37,8 @@
 #define BLINK_ON_TICKS  (TIMER_FREQUENCY_HZ * 3 / 4)
 #define BLINK_OFF_TICKS (TIMER_FREQUENCY_HZ - BLINK_ON_TICKS)
 
+extern pFunction Bootloader_JumpToBootloader;
+
 int main(void)
 {
 
@@ -48,7 +50,7 @@ int main(void)
 
 	if(BranchingCode() == BOOT_MODE)
 	{
-		Bootloader_Main();
+		Bootloader_JumpToBootloader();
 	}
 
 	while (1)

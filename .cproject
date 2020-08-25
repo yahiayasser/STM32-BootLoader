@@ -47,12 +47,20 @@
 							<builder buildPath="${workspace_loc:/STM32_BootLoader}/Debug" id="ilg.gnuarmeclipse.managedbuild.cross.builder.2104235881" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="ilg.gnuarmeclipse.managedbuild.cross.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.1132671817" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.362588836" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.1391912573" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" valueType="includePath">
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths.1391912573" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.include.paths" useByScannerDiscovery="true" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;../include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../system/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../system/include/cmsis&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../system/include/stm32f1-stdperiph&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Drivers\STM32f103\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\memory\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Bootloader&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/system/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/memory/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Drivers/STM32f103/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Bootloader}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.1000475340" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
@@ -67,13 +75,17 @@
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.97024332" name="Cross ARM GNU C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.1222864660" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="true" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;../include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../system/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../system/include/cmsis&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../system/include/stm32f1-stdperiph&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Bootloader}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Drivers/STM32f103/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\memory\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Bootloader&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Drivers\STM32f103\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Bootloader}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/system/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/memory/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Drivers/STM32f103/Include}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1088137989" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="true" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
@@ -93,6 +105,14 @@
 									<listOptionValue builtIn="false" value="&quot;../system/include/cmsis&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../system/include/stm32f1-stdperiph&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Drivers\STM32f103\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\memory\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Bootloader&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/system/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/memory/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Drivers/STM32f103/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Bootloader}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.1230921343" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.963271631" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -157,9 +177,28 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.796936759.208431404" name="Bootloader.c" rcbsApplicability="disable" resourcePath="Bootloader/Bootloader.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.97024332.1252186867">
+						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.97024332.1252186867" name="Cross ARM GNU C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.97024332">
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.381340944" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" valueType="includePath">
+								<listOptionValue builtIn="false" value="&quot;../system/include/cmsis&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;../system/include/stm32f1-stdperiph&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\memory\include&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Bootloader&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Drivers\STM32f103\Include&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\include&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/include}&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Bootloader}&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/system/include}&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/memory/include}&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Drivers/STM32f103/Include}&quot;"/>
+							</option>
+							<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.373108504" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
+						</tool>
+					</fileInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Bootloader"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32f103/Src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="memory/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry excluding="src/stm32f1-stdperiph/stm32f10x_adc.c|src/stm32f1-stdperiph/stm32f10x_bkp.c|src/stm32f1-stdperiph/stm32f10x_can.c|src/stm32f1-stdperiph/stm32f10x_cec.c|src/stm32f1-stdperiph/stm32f10x_crc.c|src/stm32f1-stdperiph/stm32f10x_dac.c|src/stm32f1-stdperiph/stm32f10x_dbgmcu.c|src/stm32f1-stdperiph/stm32f10x_dma.c|src/stm32f1-stdperiph/stm32f10x_exti.c|src/stm32f1-stdperiph/stm32f10x_fsmc.c|src/stm32f1-stdperiph/stm32f10x_i2c.c|src/stm32f1-stdperiph/stm32f10x_iwdg.c|src/stm32f1-stdperiph/stm32f10x_pwr.c|src/stm32f1-stdperiph/stm32f10x_rtc.c|src/stm32f1-stdperiph/stm32f10x_sdio.c|src/stm32f1-stdperiph/stm32f10x_spi.c|src/stm32f1-stdperiph/stm32f10x_tim.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="system"/>
 					</sourceEntries>
@@ -219,6 +258,14 @@
 									<listOptionValue builtIn="false" value="&quot;../system/include/cmsis&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../system/include/stm32f1-stdperiph&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Drivers\STM32f103\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/memory/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\memory\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Bootloader&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/system/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Drivers/STM32f103/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Bootloader}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.115663538" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NDEBUG"/>
@@ -235,6 +282,14 @@
 									<listOptionValue builtIn="false" value="&quot;../system/include/cmsis&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../system/include/stm32f1-stdperiph&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Drivers\STM32f103\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/memory/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\memory\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Bootloader&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/system/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Drivers/STM32f103/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Bootloader}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1534741952" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="true" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="NDEBUG"/>
@@ -251,6 +306,14 @@
 									<listOptionValue builtIn="false" value="&quot;../system/include/cmsis&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../system/include/stm32f1-stdperiph&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Drivers\STM32f103\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/memory/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\memory\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Bootloader&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/system/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Drivers/STM32f103/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Bootloader}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.306898319" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti.1777739727" name="Do not use RTTI (-fno-rtti)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.nortti" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -312,6 +375,26 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1833267521.197916133" name="Bootloader.c" rcbsApplicability="disable" resourcePath="Bootloader/Bootloader.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.433047568.43057437">
+						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.433047568.43057437" name="Cross ARM GNU C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.433047568">
+							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.1499497288" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" valueType="includePath">
+								<listOptionValue builtIn="false" value="&quot;../include&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;../system/include&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;../system/include/cmsis&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;../system/include/stm32f1-stdperiph&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Drivers\STM32f103\Include&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/memory/include}&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\memory\include&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\Bootloader&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;D:\STM32-Bootloader_Repo\STM32-BootLoader\include&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/include}&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/system/include}&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Drivers/STM32f103/Include}&quot;"/>
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/STM32_BootLoader/Bootloader}&quot;"/>
+							</option>
+							<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1275964580" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
+						</tool>
+					</fileInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry excluding="src/stm32f1-stdperiph/stm32f10x_wwdg.c|src/stm32f1-stdperiph/stm32f10x_usart.c|src/stm32f1-stdperiph/stm32f10x_tim.c|src/stm32f1-stdperiph/stm32f10x_spi.c|src/stm32f1-stdperiph/stm32f10x_sdio.c|src/stm32f1-stdperiph/stm32f10x_rtc.c|src/stm32f1-stdperiph/stm32f10x_pwr.c|src/stm32f1-stdperiph/stm32f10x_iwdg.c|src/stm32f1-stdperiph/stm32f10x_i2c.c|src/stm32f1-stdperiph/stm32f10x_fsmc.c|src/stm32f1-stdperiph/stm32f10x_flash.c|src/stm32f1-stdperiph/stm32f10x_exti.c|src/stm32f1-stdperiph/stm32f10x_dma.c|src/stm32f1-stdperiph/stm32f10x_dbgmcu.c|src/stm32f1-stdperiph/stm32f10x_dac.c|src/stm32f1-stdperiph/stm32f10x_crc.c|src/stm32f1-stdperiph/stm32f10x_cec.c|src/stm32f1-stdperiph/stm32f10x_can.c|src/stm32f1-stdperiph/stm32f10x_bkp.c|src/stm32f1-stdperiph/stm32f10x_adc.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="system"/>
@@ -326,7 +409,14 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/STM32_BootLoader"/>
+		</configuration>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/STM32_BootLoader"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.796936759;ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.796936759.;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.1000364471;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.224157723">
