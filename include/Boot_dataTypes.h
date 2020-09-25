@@ -57,6 +57,7 @@ typedef struct
 	boolean NotFirstTime_Flag;
 	uint8 stub;
 }Bootloader_Info;
+#define SIZEOF_FlashInfo	20
 
 typedef struct
 {

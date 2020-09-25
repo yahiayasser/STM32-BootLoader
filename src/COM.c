@@ -56,6 +56,8 @@ void COMReceive(uint16 SizeOfData, void* pData)
 
 	for(; Count < SizeOfData; Count++)
 	{
+        /* Wait until there's data in the receive data register */
+		while(USART_GetFlagStatus(USART1, USART_FLAG_RXNE) != SET);
 		ptr[Count] = (uint8)USART_ReceiveData(USART1);
 	}
 
@@ -93,11 +95,11 @@ void Bootloader_UARTInit(void)
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /* Enable USART1 */
-    USART_Cmd(USART1, ENABLE);
-
     /* Configure USART1 */
     USART_Init(USART1, &BootloaderUART);
+
+    /* Enable USART1 */
+    USART_Cmd(USART1, ENABLE);
 
 #if(Bootloader_Interrupt == BOOTLOADER_Handle)
     /* Enable RXNE interrupt */

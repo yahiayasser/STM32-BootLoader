@@ -43,7 +43,7 @@ __attribute__((section(".boot_code")))
 Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType);
 
 __attribute__((section(".boot_code")))
-Std_ReturnType Bootloader_FlashWrite(uint32 Address, uint8 Byte_Count, void* pData);
+Std_ReturnType Bootloader_Write(uint32 Address, uint8 Byte_Count, void* pData);
 
 __attribute__((section(".boot_code")))
 void Bootloader_End(void);
