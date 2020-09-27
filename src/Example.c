@@ -41,9 +41,6 @@ extern pFunction Bootloader_JumpToBootloader;
 
 int main(void)
 {
-
-	uint32_t seconds = 0;
-	uint8 data1, data2;
 	timer_start();
 
 	blink_led_init();

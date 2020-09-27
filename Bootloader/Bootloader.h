@@ -85,7 +85,17 @@ typedef uint8 Bootloader_ServiceId;
 #define Bootloader_GetVersion_API			((Bootloader_ServiceId)0x0AU)
 #define Bootloader_Remove_Image_API			((Bootloader_ServiceId)0x0BU)
 #define Bootloader_Update_Image_API			((Bootloader_ServiceId)0x0CU)
-#define Bootloader_Install_Image_API		((Bootloader_ServiceId)0x0DU)
+#define Bootloader_WriteFrame_API			((Bootloader_ServiceId)0x0DU)
+#define Bootloader_ReceiveFrame_API			((Bootloader_ServiceId)0x0EU)
+#define Bootloader_ParseFrame_API			((Bootloader_ServiceId)0x0FU)
+#define Bootloader_JumpToApp_API			((Bootloader_ServiceId)0x10U)
+#define Bootloader_EditData_API				((Bootloader_ServiceId)0x11U)
+#define Bootloader_Checksum_API				((Bootloader_ServiceId)0x12U)
+#define Bootloader_Main_API					((Bootloader_ServiceId)0x13U)
+#define BranchingCode_API					((Bootloader_ServiceId)0x14U)
+#define String_To_IHex_API					((Bootloader_ServiceId)0x15U)
+#define ASCII_To_HEX_API					((Bootloader_ServiceId)0x16U)
+#define string_length_API					((Bootloader_ServiceId)0x17U)
 
 
 #include "DET.h"
@@ -97,9 +107,6 @@ typedef uint8 Bootloader_ServiceId;
 #endif
 
 
-
-__attribute__((section(".boot_code")))
-Std_ReturnType Bootloader(Bootloader_SignalType signal);
 
 JumpMode BranchingCode(void);
 

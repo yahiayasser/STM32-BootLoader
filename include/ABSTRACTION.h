@@ -13,6 +13,9 @@
 
 #define FLASH_OK	WriteComplete
 
+#define Bootloader_UnlockFlash()	UnlockFlash()
+#define Bootloader_LockFlash()		LockFlash()
+
 #define Bootloader_HW_Init()	{ \
 	RCC_HSICmd(ENABLE);\
 	while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET){};\

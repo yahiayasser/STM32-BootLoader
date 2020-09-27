@@ -12,6 +12,6 @@
 #define DET_SW_MINOR_VERSION			(0U)
 #define DET_SW_PATCH_VERSION			(0U)
 
-Std_ReturnType Det_ReportError(uint16 ModuleId, uint8 ApiId, uint8 ErrorId);
+void Det_ReportError(uint16 ModuleId, uint8 ApiId, uint8 ErrorId);
 
 #endif

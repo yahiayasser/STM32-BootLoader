@@ -7,18 +7,18 @@ __attribute__((section(".boot_code")))
 static void Bootloader_EditData(uint8* pData, uint8* ByteCount);
 
 __attribute__((section(".boot_code")))
-uint8 string_length(uint8* str);
+static uint8 string_length(uint8* str);
 
 __attribute__((section(".boot_code")))
-uint8 ASCII_To_HEX(uint8 ASCII);
+static uint8 ASCII_To_HEX(uint8 ASCII);
 
 __attribute__((section(".boot_code")))
-Std_ReturnType String_To_IHex(uint8* ASCII_Frame, void* Frame);
+static Std_ReturnType String_To_IHex(uint8* ASCII_Frame, void* Frame);
 
 #if(STD_ON == BOOTLOADER_CHECKSUM)
 
 __attribute__((section(".boot_code")))
-Std_ReturnType Checksum(void* Frame);
+Std_ReturnType Bootloader_Checksum(void* Frame);
 
 #endif
 
@@ -61,9 +61,19 @@ Std_ReturnType Bootloader_Init(void)
 	pErase.EraseType = ERASE_PAGE;
 	pErase.StartPage = BootloaderFlagIndex;
 
-	Mem_FlashErase(&pErase);
+	if(Mem_FlashErase(&pErase) != E_OK)
+	{
+		Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_Init_API, ERROR_FlashErase);
+		return State;
+	}
+
 	Bootloader_ChangeWriteDataSize(FLASH_WRITE_DATA_SIZE_WORD);
-	Bootloader_Write(BootloaderFlagStartAddress, SIZEOF_FlashInfo, (Bootloader_Info*)(&Temp_FlashInfo));
+
+	if(Bootloader_FlashWrite(BootloaderFlagStartAddress, SIZEOF_FlashInfo, (Bootloader_Info*)(&Temp_FlashInfo)) != E_OK)
+	{
+		Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_Init_API, ERROR_FlashWrite);
+		return State;
+	}
 
 	BootloaderVersion.major = BOOTLOADER_SW_MAJOR_VERSION;
 	BootloaderVersion.minor = BOOTLOADER_SW_MINOR_VERSION;
@@ -96,6 +106,7 @@ Std_ReturnType Bootloader_ReceiveFrame(void* Frame)
 
 	if(StringFrame[11 + (DataSize << 1)] != '\r' || StringFrame[11 + (DataSize << 1)] != '\n')
 	{
+		Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_ReceiveFrame_API, ERROR_Frame);
 		return State;
 	}
 	StringFrame[11 + (DataSize << 1)] = '\0';
@@ -130,6 +141,7 @@ Std_ReturnType Bootloader_ParseFrame(void* ASCII_Frame, void* Frame)
 	/* Convert ASCII frame to Hex frame */
 	if(E_OK != String_To_IHex((uint8*) ASCII_Frame, (void*) Frame))
 	{
+		Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_ParseFrame_API, ERROR_Frame);
 		return State;
 	}
 
@@ -161,11 +173,12 @@ Std_ReturnType Bootloader_ParseFrame(void* ASCII_Frame, void* Frame)
 	return State;
 }
 
-void Bootloader_End(void)
+Std_ReturnType Bootloader_End(void)
 {
+	Std_ReturnType State = E_NOT_OK;
 	Bootloader_EraseType pErase;
 
-	UnlockFlash();
+	Bootloader_UnlockFlash();
 
 	ELAFirstTime_Flag = TRUE;
 
@@ -176,13 +189,26 @@ void Bootloader_End(void)
 	pErase.EraseType = ERASE_PAGE;
 	pErase.StartPage = BootloaderFlagIndex;
 
-	Mem_FlashErase(&pErase);
-	Bootloader_ChangeWriteDataSize(FLASH_WRITE_DATA_SIZE_WORD);
-	Bootloader_Write(BootloaderFlagStartAddress, SIZEOF_FlashInfo, (Bootloader_Info*)(&Temp_FlashInfo));
+	if(Mem_FlashErase(&pErase) != E_OK)
+	{
+		Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_End_API, ERROR_FlashErase);
+		return State;
+	}
 
-	LockFlash();
+	Bootloader_ChangeWriteDataSize(FLASH_WRITE_DATA_SIZE_WORD);
+
+	if(Bootloader_FlashWrite(BootloaderFlagStartAddress, SIZEOF_FlashInfo, (Bootloader_Info*)(&Temp_FlashInfo)) != E_OK)
+	{
+		Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_End_API, ERROR_FlashWrite);
+		return State;
+	}
+
+	Bootloader_LockFlash();
 
 	//Bootloader_JumpToApp();
+
+	State = E_OK;
+	return State;
 }
 
 void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size)
@@ -190,17 +216,18 @@ void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size)
 	SizeOfDataTobeWritten = size;
 }
 
-Std_ReturnType Bootloader_Write(uint32 Address, uint8 Byte_Count, void* pData)
+Std_ReturnType Bootloader_FlashWrite(uint32 Address, uint8 Byte_Count, void* pData)
 {
 	Std_ReturnType State = E_NOT_OK;
 
-	UnlockFlash();
+	Bootloader_UnlockFlash();
 
 #if(IntelHex_Type == BOOTLOADER_FrameType)
 
 
 	if(Mem_FlashWrite(Address, Byte_Count, pData, SizeOfDataTobeWritten) != E_OK)
 	{
+		Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_FlashWrite_API, ERROR_FlashWrite);
 		return State;
 	}
 
@@ -212,7 +239,7 @@ Std_ReturnType Bootloader_Write(uint32 Address, uint8 Byte_Count, void* pData)
 #error "Invalid value of BOOTLOADER_CommProtocol"
 #endif
 
-	LockFlash();
+	Bootloader_LockFlash();
 
 	State = E_OK;
 	return State;
@@ -267,7 +294,7 @@ static void Bootloader_EditData(uint8* pData, uint8* ByteCount)
 }
 
 #if(STD_ON == BOOTLOADER_CHECKSUM)
-Std_ReturnType Checksum(void* Frame)
+Std_ReturnType Bootloader_Checksum(void* Frame)
 {
 	Std_ReturnType State = E_NOT_OK;
 	uint8 ui8count;
@@ -294,6 +321,7 @@ Std_ReturnType Checksum(void* Frame)
 	ui8CheckSumValue++;
 
 	if(ui8CheckSumValue != IHexFrame.checksum){
+		Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_Checksum_API, ERROR_Checksum);
 		return State;
 	}
 
@@ -316,8 +344,10 @@ Std_ReturnType Bootloader_WriteFrame(void* Frame)
 	IHex_Frame Frame_IHex = *((IHex_Frame*)Frame);
 
 	Bootloader_EditData(Frame_IHex.data, &(Frame_IHex.byte_count));
-	if(E_OK != Bootloader_Write(APP_Counter, Frame_IHex.byte_count, Frame_IHex.data))
+
+	if(E_OK != Bootloader_FlashWrite(APP_Counter, Frame_IHex.byte_count, Frame_IHex.data))
 	{
+		Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_WriteFrame_API, ERROR_FlashWrite);
 		return State;
 	}
 
@@ -339,29 +369,33 @@ void Bootloader_Main(void)
 	{
 		/*if(Bootloader_ReceiveFrame((void *)&StringFrame) != E_OK)
 		{
-
+			Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_Main_API, ERROR_FrameReceive);
 		}*/
 
 		if(Bootloader_ParseFrame((void *)&StringFrame, (void *)&Frame) != E_OK)
 		{
-
+			Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_Main_API, ERROR_FrameParse);
 		}
 
 #if(STD_ON == BOOTLOADER_CHECKSUM)
-		if(Checksum((void *)&Frame) != E_OK)
+		if(Bootloader_Checksum((void *)&Frame) != E_OK)
 		{
-
+			Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_Main_API, ERROR_Checksum);
 		}
 #endif
 
 		if(Bootloader_WriteFrame((void *)&Frame) != E_OK)
 		{
-
+			Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_Main_API, ERROR_FlashWrite);
 		}
 
 	}while(Frame.record_type != IHEX_EOF);
 
-	Bootloader_End();
+	if(Bootloader_End() != E_OK)
+	{
+		Det_ReportError(BOOTLOADER_MODULE_ID, Bootloader_Main_API, ERROR_BootloaderTerminate);
+	}
+
 	while (1);
 }
 
@@ -389,7 +423,7 @@ JumpMode BranchingCode(void)
 	return retVal;
 }
 
-Std_ReturnType String_To_IHex(uint8* ASCII_Frame, void* Frame)
+static Std_ReturnType String_To_IHex(uint8* ASCII_Frame, void* Frame)
 {
 	Std_ReturnType State = E_NOT_OK;
 
@@ -409,12 +443,14 @@ Std_ReturnType String_To_IHex(uint8* ASCII_Frame, void* Frame)
 	/* First Hex digit must be colon */
 	if(ASCII_Frame[0] != ':')
 	{
+		Det_ReportError(BOOTLOADER_MODULE_ID, String_To_IHex_API, ERROR_Frame);
 		return State;
 	}
 
 	/* Numbers of characters in frame must be byte count + 11 (data length) */
-	else if(ASCII_Frame_Length < (IHexFrame.byte_count + 11))
+	else if(ASCII_Frame_Length != ((IHexFrame.byte_count << 1) + 11 + 2))
 	{
+		Det_ReportError(BOOTLOADER_MODULE_ID, String_To_IHex_API, ERROR_Frame);
 		return State;
 	}
 
@@ -449,7 +485,7 @@ Std_ReturnType String_To_IHex(uint8* ASCII_Frame, void* Frame)
 }
 
 
-uint8 ASCII_To_HEX(uint8 ASCII)
+static uint8 ASCII_To_HEX(uint8 ASCII)
 {
 	/* Function to convert ASCII letter to Hex digit */
 
@@ -471,7 +507,7 @@ uint8 ASCII_To_HEX(uint8 ASCII)
 	}
 }
 
-uint8 string_length(uint8* str)
+static uint8 string_length(uint8* str)
 {
 	/* Function to get the length of string */
 

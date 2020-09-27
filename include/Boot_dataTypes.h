@@ -46,6 +46,16 @@ typedef enum{
 	INSTALL_BOOTLOADER
 }Bootloader_SignalType;
 
+typedef enum{
+	ERROR_FlashErase,
+	ERROR_FlashWrite,
+	ERROR_Frame,
+	ERROR_Checksum,
+	ERROR_FrameParse,
+	ERROR_FrameReceive,
+	ERROR_BootloaderTerminate
+}Bootloader_ErrorType;
+
 typedef struct
 {
 	pFunction Main;
