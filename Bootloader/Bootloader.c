@@ -6,6 +6,22 @@
 __attribute__((section(".boot_code")))
 static void Bootloader_EditData(uint8* pData, uint8* ByteCount);
 
+__attribute__((section(".boot_code")))
+uint8 string_length(uint8* str);
+
+__attribute__((section(".boot_code")))
+uint8 ASCII_To_HEX(uint8 ASCII);
+
+__attribute__((section(".boot_code")))
+Std_ReturnType String_To_IHex(uint8* ASCII_Frame, void* Frame);
+
+#if(STD_ON == BOOTLOADER_CHECKSUM)
+
+__attribute__((section(".boot_code")))
+Std_ReturnType Checksum(void* Frame);
+
+#endif
+
 Bootloader_Info Temp_FlashInfo;
 
 static Bootloader_SizeOfData SizeOfDataTobeWritten = BOOTLOADER_FlashProgrammedDataSize;
@@ -13,6 +29,10 @@ static Bootloader_SizeOfData SizeOfDataTobeWritten = BOOTLOADER_FlashProgrammedD
 Bootloader_Version BootloaderVersion;
 
 pFunction Bootloader_JumpToBootloader = stub;
+
+uint32 APP_Counter;
+
+boolean ELAFirstTime_Flag = TRUE;
 
 
 Std_ReturnType Bootloader_Init(void)
@@ -57,29 +77,35 @@ Std_ReturnType Bootloader_ReceiveFrame(void* Frame)
 {
 	Std_ReturnType State = E_NOT_OK;
 
+	/* StringFrame string to hold the ASCII value of the incoming IHex frame */
+	uint8 StringFrame[MaxFrameLength];
+
+	uint8 DataSize = 0;
+
+	uint8 count = 0;
+
 #if(IntelHex_Type == BOOTLOADER_FrameType)
 
-	volatile uint8 Temp = 0;
-	IHex_Frame Frame_IHex = *((IHex_Frame*) Frame);
+	COMReceive((uint16)9, (void*)StringFrame);
 
-	COMReceive((uint16)1, (void*)&Temp);
+	DataSize = (ASCII_To_HEX(StringFrame[1]) << 4) | ASCII_To_HEX(StringFrame[2]);
 
-	if(Temp != ':')
+	COMReceive((uint16)((DataSize << 1) + 2), (void*)&(StringFrame[9]));
+
+	COMReceive((uint16)1, (void*)&(StringFrame[11 + (DataSize << 1)]));
+
+	if(StringFrame[11 + (DataSize << 1)] != '\r' || StringFrame[11 + (DataSize << 1)] != '\n')
 	{
 		return State;
 	}
+	StringFrame[11 + (DataSize << 1)] = '\0';
 
-	COMReceive((uint16)1, 						(void*)&(Frame_IHex.byte_count));
-	COMReceive((uint16)2, 						(void*)&(Frame_IHex.address));
-	COMReceive((uint16)1, 						(void*)&(Frame_IHex.record_type));
-	COMReceive((uint16)(Frame_IHex.byte_count), (void*)&(Frame_IHex.data));
-	COMReceive((uint16)1,						(void*)&(Frame_IHex.checksum));
-
-	COMReceive((uint16)1, (void*)&Temp);
-	if(Temp != '\r' || Temp != '\n')
+	while(StringFrame[count] != '\0')
 	{
-		return State;
+		*((uint8*)Frame + count) = StringFrame[count];
+		count++;
 	}
+	*((uint8*)Frame + count) = '\0';
 
 #elif(Motorola_S_Record_Type == BOOTLOADER_FrameType)
 
@@ -93,26 +119,35 @@ Std_ReturnType Bootloader_ReceiveFrame(void* Frame)
 	return State;
 }
 
-Std_ReturnType Bootloader_ParseFrame(void* Frame)
+Std_ReturnType Bootloader_ParseFrame(void* ASCII_Frame, void* Frame)
 {
 	Std_ReturnType State = E_NOT_OK;
 
 #if(IntelHex_Type == BOOTLOADER_FrameType)
 
-	IHex_Frame Frame_IHex = *((IHex_Frame*) Frame);
+	IHex_Frame Frame_IHex;
+
+	/* Convert ASCII frame to Hex frame */
+	if(E_OK != String_To_IHex((uint8*) ASCII_Frame, (void*) Frame))
+	{
+		return State;
+	}
+
+	Frame_IHex = *((IHex_Frame*) Frame);
 
 	if(IHEX_DATA == Frame_IHex.record_type)
 	{
-		Temp_FlashInfo.AppAddress |= Frame_IHex.address;
-
-		Bootloader_EditData(Frame_IHex.data, &(Frame_IHex.byte_count));
-		Bootloader_Write(Temp_FlashInfo.AppAddress, Frame_IHex.byte_count, Frame_IHex.data);
-		Temp_FlashInfo.AppAddress += Frame_IHex.byte_count;
+		APP_Counter = (APP_Counter & 0xFFFF0000) | (Frame_IHex.address);
 	}
 	else if (IHEX_ELA == Frame_IHex.record_type)
 	{
-		Temp_FlashInfo.AppAddress = (Temp_FlashInfo.AppAddress & 0xFF) | (Frame_IHex.address << 16);
-	}
+		if(TRUE == ELAFirstTime_Flag)
+		{
+			Temp_FlashInfo.AppAddress = (Temp_FlashInfo.AppAddress & 0xFF) | (Frame_IHex.address << 16);
+			ELAFirstTime_Flag = FALSE;
+		}
+		APP_Counter = (APP_Counter & 0xFF) | (Frame_IHex.address << 16);
+	}else{}
 
 #elif(Motorola_S_Record_Type == BOOTLOADER_FrameType)
 
@@ -131,6 +166,8 @@ void Bootloader_End(void)
 	Bootloader_EraseType pErase;
 
 	UnlockFlash();
+
+	ELAFirstTime_Flag = TRUE;
 
 	Temp_FlashInfo.BootSuccesfull_Flag = TRUE;
 	Temp_FlashInfo.Boot_Flag = FALSE;
@@ -229,9 +266,101 @@ static void Bootloader_EditData(uint8* pData, uint8* ByteCount)
 	*ByteCount = count;
 }
 
+#if(STD_ON == BOOTLOADER_CHECKSUM)
+Std_ReturnType Checksum(void* Frame)
+{
+	Std_ReturnType State = E_NOT_OK;
+	uint8 ui8count;
+	uint8 ui8CheckSumValue = 0;
+
+#if(IntelHex_Type == BOOTLOADER_FrameType)
+
+	IHex_Frame IHexFrame = *((IHex_Frame*) Frame);
+
+	/* Calculating value of check sum */
+	ui8CheckSumValue = IHexFrame.byte_count + IHexFrame.record_type + (IHexFrame.address >> 8) + (IHexFrame.address & 0xFF);
+
+	for(ui8count = 0; ui8count < IHexFrame.byte_count; ui8count++)
+	{
+		/* Calculating value of check sum */
+		ui8CheckSumValue += IHexFrame.data[ui8count];
+	}
+
+	/*A record's checksum byte is the two's complement of the least significant byte (LSB) of the sum of all decoded byte values
+	  in the record preceding the checksum. It is computed by summing the decoded byte values and extracting the LSB of the sum
+	  (i.e., the data checksum), and then calculating the two's complement of the LSB */
+
+	ui8CheckSumValue = (~ui8CheckSumValue);
+	ui8CheckSumValue++;
+
+	if(ui8CheckSumValue != IHexFrame.checksum){
+		return State;
+	}
+
+#elif(Motorola_S_Record_Type == BOOTLOADER_FrameType)
+
+#elif(RawBinary_Type == BOOTLOADER_FrameType)
+
+#else
+#error "Invalid value of BOOTLOADER_CommProtocol"
+#endif
+
+	State = E_OK;
+	return State;
+}
+#endif
+
+Std_ReturnType Bootloader_WriteFrame(void* Frame)
+{
+	Std_ReturnType State = E_NOT_OK;
+	IHex_Frame Frame_IHex = *((IHex_Frame*)Frame);
+
+	Bootloader_EditData(Frame_IHex.data, &(Frame_IHex.byte_count));
+	if(E_OK != Bootloader_Write(APP_Counter, Frame_IHex.byte_count, Frame_IHex.data))
+	{
+		return State;
+	}
+
+	State = E_OK;
+	return State;
+}
+
 void Bootloader_Main(void)
 {
+	IHex_Frame Frame;
+
+	/* StringFrame string to hold the ASCII value of the incoming IHex frame */
+	uint8 StringFrame[MaxFrameLength] = ":1020000000000000000000000000000000000000D0\r\n";
+	APP_Counter = 0x08000000;
+
 	Bootloader_Init();
+
+	do
+	{
+		/*if(Bootloader_ReceiveFrame((void *)&StringFrame) != E_OK)
+		{
+
+		}*/
+
+		if(Bootloader_ParseFrame((void *)&StringFrame, (void *)&Frame) != E_OK)
+		{
+
+		}
+
+#if(STD_ON == BOOTLOADER_CHECKSUM)
+		if(Checksum((void *)&Frame) != E_OK)
+		{
+
+		}
+#endif
+
+		if(Bootloader_WriteFrame((void *)&Frame) != E_OK)
+		{
+
+		}
+
+	}while(Frame.record_type != IHEX_EOF);
+
 	Bootloader_End();
 	while (1);
 }
@@ -241,16 +370,113 @@ JumpMode BranchingCode(void)
 	JumpMode retVal = APP_MODE;
 	Bootloader_Info* pInfo = (Bootloader_Info*)BootloaderFlagStartAddress;
 	Bootloader_Info BootInfo = *(Bootloader_Info*)pInfo;
+
 	BootInfo.Boot_Flag = TRUE;
+
 	if(BootInfo.Boot_Flag == TRUE)
 	{
 		if(BootInfo.NotFirstTime_Flag == TRUE)
 		{
 			Bootloader_JumpToBootloader = BootInfo.Main;
 		}
-		Bootloader_JumpToBootloader = (pFunction)Bootloader_Main;
+		else
+		{
+			Bootloader_JumpToBootloader = (pFunction)Bootloader_Main;
+		}
 		retVal = BOOT_MODE;
 	}
+
 	return retVal;
 }
 
+Std_ReturnType String_To_IHex(uint8* ASCII_Frame, void* Frame)
+{
+	Std_ReturnType State = E_NOT_OK;
+
+#if(IntelHex_Type == BOOTLOADER_FrameType)
+
+	/* Intel Hex frame */
+	IHex_Frame IHexFrame;
+
+	/* Counters */
+	uint8 ui8count = 0;
+
+	uint8 ASCII_Frame_Length = string_length(ASCII_Frame);
+
+	/* Byte count is two hex digits ( 1 & 2 ) */
+	IHexFrame.byte_count = (ASCII_To_HEX(ASCII_Frame[1]) << 4) | ASCII_To_HEX(ASCII_Frame[2]);
+
+	/* First Hex digit must be colon */
+	if(ASCII_Frame[0] != ':')
+	{
+		return State;
+	}
+
+	/* Numbers of characters in frame must be byte count + 11 (data length) */
+	else if(ASCII_Frame_Length < (IHexFrame.byte_count + 11))
+	{
+		return State;
+	}
+
+	else{}
+
+	/* Address is four digits ( 3 & 4 & 5 & 6 ) */
+	IHexFrame.address = (ASCII_To_HEX(ASCII_Frame[3]) << 12) | (ASCII_To_HEX(ASCII_Frame[4]) << 8) | (ASCII_To_HEX(ASCII_Frame[5]) << 4) | ASCII_To_HEX(ASCII_Frame[6]);
+
+	/* Record is two digits ( 7 & 8 ) */
+	IHexFrame.record_type = (ASCII_To_HEX(ASCII_Frame[7]) << 4) | ASCII_To_HEX(ASCII_Frame[8]);
+
+	/* Checksum is the last two digits  */
+	IHexFrame.checksum = (ASCII_To_HEX(ASCII_Frame[(IHexFrame.byte_count << 1) + 9]) << 4) | ASCII_To_HEX(ASCII_Frame[(IHexFrame.byte_count << 1) + 10]);
+
+	for(ui8count = 0; ui8count < IHexFrame.byte_count; ui8count++)
+	{
+		IHexFrame.data[ui8count] = (ASCII_To_HEX(ASCII_Frame[ui8count*2 + 9]) << 4) | ASCII_To_HEX(ASCII_Frame[ui8count*2 + 10]);
+	}
+
+	*((IHex_Frame*) Frame) = IHexFrame;
+
+#elif(Motorola_S_Record_Type == BOOTLOADER_FrameType)
+
+#elif(RawBinary_Type == BOOTLOADER_FrameType)
+
+#else
+#error "Invalid value of BOOTLOADER_CommProtocol"
+#endif
+
+	State = E_OK;
+	return State;
+}
+
+
+uint8 ASCII_To_HEX(uint8 ASCII)
+{
+	/* Function to convert ASCII letter to Hex digit */
+
+	if((ASCII >= '0') && (ASCII <= '9'))
+	{
+		return (ASCII - '0');
+	}
+	else if((ASCII >= 'A') && (ASCII <= 'F'))
+	{
+		return (ASCII - 'A' + 10);
+	}
+	else if((ASCII >= 'a') && (ASCII <= 'f'))
+	{
+		return (ASCII - 'a' + 10);
+	}
+	else
+	{
+		return 255;
+	}
+}
+
+uint8 string_length(uint8* str)
+{
+	/* Function to get the length of string */
+
+	uint8 count;
+	/* count the string start from element 0 until the element before the NULL terminator */
+	for(count = 0; str[count] != '\0'; ++count);
+	return count;
+}

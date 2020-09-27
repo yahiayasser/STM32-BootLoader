@@ -35,6 +35,7 @@
 #endif
 
 #define BOOTLOADER_START_ADD	(0x08006000)
+#define MaxFrameLength			46
 
 __attribute__((section(".boot_code")))
 Std_ReturnType Bootloader_Init(void);
@@ -58,13 +59,16 @@ __attribute__((section(".boot_code")))
 Std_ReturnType Bootloader_ReceiveFrame(void* Frame);
 
 __attribute__((section(".boot_code")))
-Std_ReturnType Bootloader_ParseFrame(void* Frame);
+Std_ReturnType Bootloader_ParseFrame(void* ASCII_Frame, void* Frame);
 
 __attribute__((section(".boot_code")))
 void Bootloader_JumpToApp(void);
 
 __attribute__((section(".boot_code")))
 void Bootloader_Main(void);
+
+__attribute__((section(".boot_code")))
+Std_ReturnType Bootloader_WriteFrame(void* Frame);
 
 
 #endif /* BOOTLOADER_INTERFACE_H_ */
