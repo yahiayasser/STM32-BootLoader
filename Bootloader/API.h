@@ -35,25 +35,22 @@
 #endif
 
 #define BOOTLOADER_START_ADD	(0x08006000)
-#define MaxFrameLength			46
+#define MaxFrameLength			44
 
 __attribute__((section(".boot_code")))
-Std_ReturnType Bootloader_Init(void);
+Std_ReturnType Bootloader_Init(Bootloader_InitTypeDef* Bootloader_InitStruct);
+
+__attribute__((section(".boot_code")))
+Std_ReturnType Bootloader_End(Bootloader_InitTypeDef* Bootloader_InitStruct);
 
 __attribute__((section(".boot_code")))
 Std_ReturnType Bootloader_FlashErase(Bootloader_EraseType* pEraseType);
 
 __attribute__((section(".boot_code")))
-Std_ReturnType Bootloader_FlashWrite(uint32 Address, uint8 Byte_Count, void* pData);
-
-__attribute__((section(".boot_code")))
-Std_ReturnType Bootloader_End(void);
+Std_ReturnType Bootloader_FlashWrite(uint32 Address, uint16 Byte_Count, void* pData);
 
 __attribute__((section(".boot_code")))
 void Bootloader_GetVersion(Bootloader_Version* version);
-
-__attribute__((section(".boot_code")))
-void Bootloader_ChangeWriteDataSize(Bootloader_SizeOfData size);
 
 __attribute__((section(".boot_code")))
 Std_ReturnType Bootloader_ReceiveFrame(void* Frame);
@@ -68,7 +65,10 @@ __attribute__((section(".boot_code")))
 void Bootloader_Main(void);
 
 __attribute__((section(".boot_code")))
-Std_ReturnType Bootloader_WriteFrame(void* Frame);
+Std_ReturnType Bootloader_HandleFrame(Frame_Buffer* BUFFER);
+
+__attribute__((section(".boot_code")))
+Std_ReturnType Bootloader_WriteBuffer(Frame_Buffer* Buffer);
 
 
 #endif /* BOOTLOADER_INTERFACE_H_ */

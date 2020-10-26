@@ -21,6 +21,12 @@
   #error "The SW version of Mem_dataTypes.h does not match the expected version"
 #endif
 
+/*	FLASH_WRITE_DATA_SIZE_HALFWORD
+ * 	FLASH_WRITE_DATA_SIZE_WORD
+ * 	FLASH_WRITE_DATA_SIZE_DOUBLEWORD
+ */
+#define FLASH_FLASH_DATA_WRITE_SIZE	FLASH_WRITE_DATA_SIZE_WORD
+
 #ifndef STD_HIGH
 #define STD_HIGH		0x01
 #endif
@@ -57,7 +63,7 @@ __attribute__((section(".boot_code")))
 Std_ReturnType Mem_FlashErase(FLASH_EraseType* pEraseType);
 
 __attribute__((section(".boot_code")))
-Std_ReturnType Mem_FlashWrite(uint32 Address, uint8 Byte_Count, void* pData, uint8 SizeOfDataTobeWritten);
+Std_ReturnType Mem_FlashWrite(uint32 Address, uint16 Byte_Count, void* pData);
 
 
 #endif /* BOOTLOADER_INTERFACE_H_ */

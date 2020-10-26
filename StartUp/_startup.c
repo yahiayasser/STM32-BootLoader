@@ -55,6 +55,7 @@
 
 #include <stdint.h>
 #include <sys/types.h>
+#include "Bootloader.h"
 
 // ----------------------------------------------------------------------------
 
@@ -331,6 +332,9 @@ _start (void)
   // Call the standard library initialisation (mandatory for C++ to
   // execute the constructors for the static objects).
   __run_init_array ();
+
+  // Boot loader branching code
+	BranchingCode();
 
   // Call the main entry point, and save the exit code.
   int code = main (argc, argv);

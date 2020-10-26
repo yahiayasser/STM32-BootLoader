@@ -96,6 +96,8 @@ typedef uint8 Bootloader_ServiceId;
 #define String_To_IHex_API					((Bootloader_ServiceId)0x15U)
 #define ASCII_To_HEX_API					((Bootloader_ServiceId)0x16U)
 #define string_length_API					((Bootloader_ServiceId)0x17U)
+#define Bootloader_WriteBuffer_API			((Bootloader_ServiceId)0x18U)
+#define Bootloader_HandleFrame_API			((Bootloader_ServiceId)0x19U)
 
 
 #include "DET.h"
@@ -108,9 +110,7 @@ typedef uint8 Bootloader_ServiceId;
 
 
 
-JumpMode BranchingCode(void);
-
-void stub(void);
+void BranchingCode(void);
 
 
 #endif /* BOOTLOADER_H_ */

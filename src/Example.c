@@ -28,27 +28,10 @@
 // ----------------------------------------------------------------------------
 
 
-#include "Timer.h"
 #include "BlinkLed.h"
-#include "Bootloader.h"
-
-
-// Keep the LED on for 2/3 of a second.
-#define BLINK_ON_TICKS  (TIMER_FREQUENCY_HZ * 3 / 4)
-#define BLINK_OFF_TICKS (TIMER_FREQUENCY_HZ - BLINK_ON_TICKS)
-
-extern pFunction Bootloader_JumpToBootloader;
 
 int main(void)
 {
-	timer_start();
-
-	blink_led_init();
-
-	if(BranchingCode() == BOOT_MODE)
-	{
-		Bootloader_JumpToBootloader();
-	}
 
 	while (1)
 	{

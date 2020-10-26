@@ -89,17 +89,17 @@ Std_ReturnType Mem_FlashErase(FLASH_EraseType* pEraseType)
 	return State;
 }
 
-Std_ReturnType Mem_FlashWrite(uint32 Address, uint8 Byte_Count, void* pData, uint8 SizeOfDataTobeWritten)
+Std_ReturnType Mem_FlashWrite(uint32 Address, uint16 Byte_Count, void* pData)
 {
 	Std_ReturnType State = E_NOT_OK;
 
 	UnlockFlash();
 
-	if(FLASH_WRITE_DATA_SIZE_HALFWORD == SizeOfDataTobeWritten)
-	{
+#if(FLASH_WRITE_DATA_SIZE_HALFWORD == FLASH_FLASH_DATA_WRITE_SIZE)
+
 		uint16* pIHexData = (uint16*) pData;
 		Byte_Count = Byte_Count >> 1;
-		for(uint8 count = 0; count < Byte_Count; count++)
+		for(uint16 count = 0; count < Byte_Count; count++)
 		{
 			if(WriteComplete != FLASH_WriteHalfWord(Address, pIHexData[count]))
 			{
@@ -107,12 +107,12 @@ Std_ReturnType Mem_FlashWrite(uint32 Address, uint8 Byte_Count, void* pData, uin
 			}
 			Address += 2;
 		}
-	}
-	else if(FLASH_WRITE_DATA_SIZE_WORD == SizeOfDataTobeWritten)
-	{
+
+#elif(FLASH_WRITE_DATA_SIZE_WORD == FLASH_FLASH_DATA_WRITE_SIZE)
+
 		uint32* pIHexData = (uint32*) pData;
 		Byte_Count = Byte_Count >> 2;
-		for(uint8 count = 0; count < Byte_Count; count++)
+		for(uint16 count = 0; count < Byte_Count; count++)
 		{
 			if(WriteComplete != FLASH_WriteWord(Address, pIHexData[count]))
 			{
@@ -120,12 +120,12 @@ Std_ReturnType Mem_FlashWrite(uint32 Address, uint8 Byte_Count, void* pData, uin
 			}
 			Address += 4;
 		}
-	}
-	else if(FLASH_WRITE_DATA_SIZE_DOUBLEWORD == SizeOfDataTobeWritten)
-	{
+
+#elif(FLASH_WRITE_DATA_SIZE_DOUBLEWORD == FLASH_FLASH_DATA_WRITE_SIZE)
+
 		uint32* pIHexData = (uint32*) pData;
 		Byte_Count = Byte_Count >> 3;
-		for(uint8 count = 0; count < Byte_Count; count++)
+		for(uint16 count = 0; count < Byte_Count; count++)
 		{
 			if(WriteComplete != FLASH_WriteWord(Address, pIHexData[count]))
 			{
@@ -140,11 +140,12 @@ Std_ReturnType Mem_FlashWrite(uint32 Address, uint8 Byte_Count, void* pData, uin
 				Address += 4;
 			}
 		}
-	}
-	else
-	{
-		return State;
-	}
+
+#else
+
+		//error
+
+#endif
 
 	LockFlash();
 

@@ -48,13 +48,18 @@
 #define Bootloader_UART_Rate	UART_115200
 /*****************************************************************************/
 
+__attribute__((section(".boot_code")))
 void Bootloader_UARTInit(void);
 
 #endif
 
+__attribute__((section(".boot_code")))
 void COM_InterruptSetter(pFunction ptr);
+__attribute__((section(".boot_code")))
 void COMInit(void);
+__attribute__((section(".boot_code")))
 void COMSend(uint16 SizeOfData, void* pData);
+__attribute__((section(".boot_code")))
 void COMReceive(uint16 SizeOfData, void* pData);
 
 #endif

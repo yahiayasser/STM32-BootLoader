@@ -114,5 +114,6 @@ typedef uint8 Std_ReturnType;
 #endif
 
 typedef uint32 FlashAddress;
+void stub(void);
 
 #endif

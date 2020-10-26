@@ -9,6 +9,10 @@
 #include "COM_Config.h"
 #include "Bootloader.h"
 
+#if(Bootloader_UART == BOOTLOADER_CommProtocol)
+extern USART_InitTypeDef BootloaderUART;
+pFunction UART_Handler = stub;
+#endif
 
 void COMInit(void)
 {
@@ -28,12 +32,13 @@ void COMSend(uint16 SizeOfData, void* pData)
 
 #if(Bootloader_UART == BOOTLOADER_CommProtocol)
 
-	uint8* ptr = (uint8*) pData;
+	uint8* ptr = pData;
 	uint16 Count = 0;
 
 	for(; Count < SizeOfData; Count++)
 	{
-		USART_SendData(USART1, (uint16)ptr[Count]);
+		while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) != SET);
+		USART_SendData(USART1, ptr[Count]);
 	}
 
 #elif(Bootloader_CAN == BOOTLOADER_CommProtocol)
@@ -73,9 +78,6 @@ void COMReceive(uint16 SizeOfData, void* pData)
 
 
 #if(Bootloader_UART == BOOTLOADER_CommProtocol)
-
-extern USART_InitTypeDef BootloaderUART;
-pFunction UART_Handler = stub;
 
 void Bootloader_UARTInit(void)
 {

@@ -6,11 +6,9 @@
 #define MEM_DATATYPES_SW_MINOR_VERSION           (0U)
 #define MEM_DATATYPES_SW_PATCH_VERSION           (0U)
 
-typedef uint8 FLASH_SizeOfData;
-#define FLASH_WRITE_DATA_SIZE_HALFWORD    ((FLASH_SizeOfData)0x10)  /*!< Program a half-word (16-bit) at a specified address   */
-#define FLASH_WRITE_DATA_SIZE_WORD        ((FLASH_SizeOfData)0x20)  /*!< Program a word (32-bit) at a specified address        */
-#define FLASH_WRITE_DATA_SIZE_DOUBLEWORD  ((FLASH_SizeOfData)0x40)  /*!< Program a double word (64-bit) at a specified address */
-
+#define FLASH_WRITE_DATA_SIZE_HALFWORD	0
+#define FLASH_WRITE_DATA_SIZE_WORD	1
+#define FLASH_WRITE_DATA_SIZE_DOUBLEWORD	2
 
 typedef enum{
 	ERASE_PAGE,

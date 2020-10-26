@@ -83,30 +83,30 @@ typedef struct{
 
 #define FlashStartAddress				(0x08000000)
 #define FlashEndAddress					(0x0800FFFF)
-#define FlashSize						(0x10000)	// In bytes
+#define FlashSize						((FlashEndAddress - FlashStartAddress) + 1)	// In bytes
 #define FlashPageSize					(0x400)
 #define FlashNumberOfPages				(FlashSize/FlashPageSize)
 
 
 #define AppStartAddress					(0x08000000)
-#define AppEndAddress					(0x0800BFFF)
-#define AppSize							(0xC000)	// In bytes
+#define AppEndAddress					(0x0800BBFF)
+#define AppSize							((AppEndAddress - AppStartAddress) + 1)	// In bytes
 #define AppNumberOfPages				(AppSize/FlashPageSize)
 #define AppIndex						((AppStartAddress - FlashStartAddress)/FlashPageSize)
 
 
-#define BootloaderImageStartAddress		(0x0800C000)
-#define BootloaderImageEndAddress		(0x0800FFFF)
-#define BootloaderImageSize				(0x4000)	// In bytes
-#define BootloaderImageNumberOfPages	(BootloaderImageSize/FlashPageSize)
-#define BootloaderImageIndex			((BootloaderImageStartAddress - FlashStartAddress)/FlashPageSize)
-
-
 #define BootloaderFlagStartAddress		(0x0800BC00)
 #define BootloaderFlagEndAddress		(0x0800BFFF)
-#define BootloaderFlagSize				(0x400)	// In bytes
+#define BootloaderFlagSize				((BootloaderFlagEndAddress - BootloaderFlagStartAddress) + 1)	// In bytes
 #define BootloaderFlagNumberOfPages		(BootloaderFlagSize/FlashPageSize)
 #define BootloaderFlagIndex				((BootloaderFlagStartAddress - FlashStartAddress)/FlashPageSize)
+
+
+#define BootloaderImageStartAddress		(0x0800C000)
+#define BootloaderImageEndAddress		(0x0800FFFF)
+#define BootloaderImageSize				((BootloaderImageEndAddress - BootloaderImageStartAddress) + 1)	// In bytes
+#define BootloaderImageNumberOfPages	(BootloaderImageSize/FlashPageSize)
+#define BootloaderImageIndex			((BootloaderImageStartAddress - FlashStartAddress)/FlashPageSize)
 
 
 #define Bootloader_StartFlagAddress		(0x1FFFF804)

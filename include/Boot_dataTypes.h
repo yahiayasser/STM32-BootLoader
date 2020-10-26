@@ -15,12 +15,12 @@
   #error "The SW version of Mem_dataTypes.h does not match the expected version"
 #endif
 
-typedef uint8 JumpMode;
-#define APP_MODE 					(JumpMode)0
-#define BOOT_MODE 					(JumpMode)1
+typedef uint8 BufferStatus;
+#define BufferStatus_Complete		(BufferStatus)0
+#define BufferStatus_NotComplete	(BufferStatus)1
+#define BufferStatus_Failed			(BufferStatus)2
 
 typedef FLASH_EraseType Bootloader_EraseType;
-typedef FLASH_SizeOfData Bootloader_SizeOfData;
 
 
 /* Maximum size of data in IHex frame
@@ -53,21 +53,9 @@ typedef enum{
 	ERROR_Checksum,
 	ERROR_FrameParse,
 	ERROR_FrameReceive,
+	ERROR_FrameHandle,
 	ERROR_BootloaderTerminate
 }Bootloader_ErrorType;
-
-typedef struct
-{
-	pFunction Main;
-	FlashAddress AppAddress;
-	FlashAddress BootloaderAddress;
-	uint32 ApplicationSize;
-	boolean Boot_Flag;
-	boolean BootSuccesfull_Flag;
-	boolean NotFirstTime_Flag;
-	uint8 stub;
-}Bootloader_Info;
-#define SIZEOF_FlashInfo	20
 
 typedef struct
 {
@@ -75,6 +63,22 @@ typedef struct
 	uint8 minor;
 	uint8 patch;
 }Bootloader_Version;
+
+struct Bootloader_InitInfo
+{
+	pFunction Main;
+	FlashAddress AppAddress;
+	FlashAddress BootloaderAddress;
+	uint32 ApplicationSize;
+	struct Bootloader_InitInfo* pInitStruct;
+	Bootloader_Version BootloaderVersion;
+	boolean Boot_Flag;
+	boolean BootSuccesfull_Flag;
+	boolean NotFirstTime_Flag;
+	uint8 NumberOfPagesFilledByPrevProgram;
+};
+typedef struct Bootloader_InitInfo Bootloader_InitTypeDef;
+#define SIZEOF_FlashInfo	27
 
 /* IHex_Frame is a structure representing Intel Hex file format */
 typedef struct{
@@ -93,6 +97,26 @@ typedef struct{
 	/* Two hex digits, 00 to 05, defining the meaning of the data field */
 	IHex_RecordTypes record_type;
 }IHex_Frame;
+
+typedef struct
+{
+	uint8 BUFFER[FlashPageSize];
+#if(IntelHex_Type == BOOTLOADER_FrameType)
+	IHex_Frame BUFFER_CurrentFrame;
+#elif(Motorola_S_Record_Type == BOOTLOADER_FrameType)
+
+#elif(RawBinary_Type == BOOTLOADER_FrameType)
+
+#else
+#error "Invalid value of BOOTLOADER_CommProtocol"
+#endif
+	uint32 BUFFER_BaseAdd;
+	uint16 BUFFER_StartAdd;
+	uint16 BUFFER_NextAdd;
+	uint16 BUFFER_Counter;
+	uint8 BUFFER_CurrentPageIndex;
+	BufferStatus BUFFER_Status;
+}Frame_Buffer;
 
 
 
